@@ -6,9 +6,10 @@
           <h1>Вход</h1>
         </b-col>
       </b-row>
-      <b-form>
+      <b-form @submit="login">
         <b-form-group>
           <b-form-input
+            name="email"
             autofocus
             type="email"
             required
@@ -17,8 +18,11 @@
             autocorrect="off"
             autocapitalize="off"
             spellcheck="false" />
-          <b-form-input type="password" required placeholder="Пароль" autocomplete="current-password" />
-          <b-button block variant="primary">Войти</b-button>
+          <b-form-input name="password" type="password" required placeholder="Пароль" autocomplete="current-password" />
+          <b-button type="submit" block :disabled="loading" variant="primary">
+            <b-spinner v-if="loading" small></b-spinner>
+            Войти
+          </b-button>
           <router-link class="register" to="/register">регистрация</router-link>
         </b-form-group>
       </b-form>
@@ -28,7 +32,26 @@
 
 <script>
 export default {
-  name: 'Login'
+  data() {
+    return {
+      loading: false
+    }
+  },
+  name: 'Login',
+  methods: {
+    async login(e) {
+      const formData = new FormData(e.target)
+      const [email, password] = [formData.get('email'), formData.get('password')]
+
+      e.preventDefault()
+
+      this.loading = true
+      await this.$store.dispatch('Login', { email, password })
+
+      this.$router.push('/')
+      this.loading = false
+    }
+  }
 }
 </script>
 
