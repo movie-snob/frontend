@@ -9,10 +9,12 @@ import { getToken } from '../utils/auth'
 Vue.use(Router)
 
 const routerMap = [
-  { path: '/', component: () => import('../components/Dashboard'), },
+  { path: '/', component: () => import('../components/Movies/Suggested'), },
   { path: '/register', component: () => import('../components/Auth/Register') },
   { path: '/login', component: () => import('../components/Auth/Login') },
-  { path: '/dashboard', component: () => import('../components/Dashboard') },
+  { path: '/movies/suggested', component: () => import('../components/Movies/Suggested') },
+  { path: '/movies/discuss', component: () => import('../components/Movies/Discuss') },
+  { path: '/movies/archive', component: () => import('../components/Movies/Archive') },
   { path: '*', redirect: '/' }
 ]
 
@@ -28,7 +30,7 @@ router.beforeEach((to, _from, next) => {
   progress.start()
   if (token) {
     if (whitelisted.includes(to.path)) {
-      next({ path: '/dashboard', replace: true})
+      next({ path: '/movies/suggested', replace: true})
       progress.done()
       return
     }
@@ -46,7 +48,7 @@ router.beforeEach((to, _from, next) => {
   }
 })
 
-router.afterEach((_to, _from, _next) => {
+router.afterEach(() => {
   progress.done()
 })
 

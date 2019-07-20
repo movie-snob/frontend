@@ -1,7 +1,5 @@
 import axios from 'axios'
 
-import store from '../store'
-
 import { getToken } from '../utils/auth'
 
 const service = axios.create({
@@ -11,8 +9,9 @@ const service = axios.create({
 
 service.interceptors.request.use(
   config => {
-    if (store.getters.token) {
-      config.headers['Authorization'] = getToken()
+    const token = getToken()
+    if (token) {
+      config.headers['Authorization'] = token
     }
     return config
   }
@@ -20,15 +19,9 @@ service.interceptors.request.use(
 
 service.interceptors.response.use(
   response => response,
-  // error => {
-  //   console.log('err' + error)
-  //   Message({
-  //     message: error.message,
-  //     type: 'error',
-  //     duration: 5 * 1000
-  //   })
-  //   return Promise.reject(error)
-  // }
+  error => {
+    return Promise.reject(error)
+  }
 )
 
 export default service

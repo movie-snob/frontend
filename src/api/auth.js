@@ -1,7 +1,6 @@
 import request from '../utils/request'
 
-
-export async function register(name, email, password) {
+export const register = async (name, email, password) => {
   return request({
     url: '/register',
     method: 'post',
@@ -13,7 +12,7 @@ export async function register(name, email, password) {
   })
 }
 
-export async function login(email, password) {
+export const login = async (email, password) => {
   return request({
     url: '/authenticate',
     method: 'post',
@@ -21,5 +20,12 @@ export async function login(email, password) {
       email,
       password
     }
+  })
+}
+
+export const getInfo = async () => {
+  return request({
+    url: '/users/me',
+    method: 'get'
   })
 }
