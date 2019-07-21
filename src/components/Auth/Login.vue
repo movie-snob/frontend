@@ -48,7 +48,7 @@ export default {
       this.loading = true
       await this.$store.dispatch('Login', { email, password })
 
-      this.$router.push('/')
+      this.$router.push('/movies/suggested')
       this.loading = false
     }
   }

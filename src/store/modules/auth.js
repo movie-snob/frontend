@@ -15,9 +15,10 @@ const auth = {
       setToken(token)
       state.token = token
     },
-    'SET_INFO': (state, { name, email }) => {
+    'SET_INFO': (state, { id, name, email }) => {
       state.user.name = name
       state.user.email = email
+      state.user.id = id
       state.user.loaded = true
     }
   },

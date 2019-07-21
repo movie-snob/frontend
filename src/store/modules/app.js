@@ -1,13 +1,16 @@
 import { searchMovie } from '../../api/moviesDB'
 import { suggestMovie, fetchSuggestedMovies, markWatched, markUnwatched } from '../../api/movies';
+import { fetchUsers } from '../../api/users'
 
-const movies = {
+const app = {
   state: {
     moviesSearch: {
       results: []
     },
     suggested: [],
-    suggestedMoviesLoaded: false
+    suggestedMoviesLoaded: false,
+    users: [],
+    usersLoaded: false
   },
   mutations: {
     'SET_SEARCH_RESULTS': (state, movies) => {
@@ -17,23 +20,43 @@ const movies = {
       state.suggested = movies
       state.suggestedMoviesLoaded = true
     },
-    'SET_WATCHED': (state, { id, date }) => {
+    'SET_WATCHED': (state, { movieId, userId, date }) => {
       state.suggested = state.suggested.map(movie => {
-        if (movie.id === id) {
+        if (movie.id === movieId) {
           movie.watched_on = date
         }
 
         return movie
       })
+
+      state.users = state.users.map(user => {
+        if (user.id === userId) {
+          user.watched_movies = [...user.watched_movies, movieId]
+        }
+
+        return user
+      })
     },
-    'SET_UNWATCHED': (state, id) => {
+    'SET_UNWATCHED': (state, { movieId, userId }) => {
       state.suggested = state.suggested.map(movie => {
-        if (movie.id === id) {
+        if (movie.id === movieId) {
           movie.watched_on = null
         }
 
         return movie
       })
+
+      state.users = state.users.map(user => {
+        if (user.id === userId) {
+          user.watched_movies = user.watched_movies.filter(id => movieId !== id)
+        }
+
+        return user
+      })
+    },
+    'SET_USERS': (state, users) => {
+      state.users = users
+      state.usersLoaded = true
     }
   },
   actions: {
@@ -55,18 +78,25 @@ const movies = {
 
       commit('SET_SUGGESTED', response.data)
     },
-
-    MarkWatched({ commit }, { id, date }) {
+    MarkWatched({ commit, rootState }, { id, date }) {
       markWatched(id, date)
 
-      commit('SET_WATCHED', { id, date })
+      commit('SET_WATCHED', { movieId: id, userId: rootState.auth.user.id, date })
     },
-    MarkUnwatched({ commit }, { id }) {
+    MarkUnwatched({ commit, rootState }, { id }) {
       markUnwatched(id)
 
-      commit('SET_UNWATCHED', id)
+      commit('SET_UNWATCHED', { movieId: id, userId: rootState.auth.user.id })
+    },
+    async FetchUsers({ commit }) {
+      const response = await fetchUsers()
+
+      commit('SET_USERS', response.data)
+    },
+    async SetUsers({ commit }, users) {
+      commit('SET_USERS', users)
     }
   }
 }
 
-export default movies
+export default app

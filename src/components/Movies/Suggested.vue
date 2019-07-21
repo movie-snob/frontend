@@ -21,14 +21,28 @@
           :img-alt="movie.title"
           img-left>
           <b-card-text>
+            <div class="chosen-by">выбран {{ nameToInstrumental(movie.suggested_by.name) }}</div>
             <b-form-checkbox
               @change.native="onMovieWatchedChange($event, movie)"
               switch
               :checked="movie.watched_on !== null">
-              Просмотрено <b-form-input type="date" @change.native="onWatchedDateChange($event, movie)" :value="movie.watched_on || today" />
+              Просмотрено
+              <b-form-input
+              type="date"
+              :value="movie.watched_on || today" />
             </b-form-checkbox>
           </b-card-text>
-          <b-button variant="primary">Обсудить и оценить</b-button>
+          <ul>
+            <li
+              v-for="user in users"
+              :key="user.id">
+              <span>
+                {{ user.name }}
+              </span>
+              <b-badge v-if="user.watched_movies.includes(movie.id)">просмотрено</b-badge>
+            </li>
+          </ul>
+          <b-button variant="primary">Обсудить фильм</b-button>
         </b-card>
       </b-card-group>
       <b-row>
@@ -80,6 +94,8 @@ import 'nprogress/nprogress.css'
 import debounce from 'lodash.debounce'
 import swal from 'sweetalert'
 import moment from 'moment'
+import t from 'typy'
+import RussianName from '../../lib/name'
 
 import Layout from '../Layout'
 import Navbar from '../Navbar'
@@ -87,7 +103,8 @@ import Navbar from '../Navbar'
 export default {
   data() {
     return {
-      search: ''
+      search: '',
+      socket: null
     }
   },
   name: 'Suggested',
@@ -101,10 +118,12 @@ export default {
       'userLoaded',
       'foundMovies',
       'suggestedMovies',
-      'suggestedMoviesLoaded'
+      'suggestedMoviesLoaded',
+      'users',
+      'usersLoaded'
     ]),
     loaded() {
-      return this.userLoaded && this.suggestedMoviesLoaded
+      return this.suggestedMoviesLoaded && this.usersLoaded
     },
     today() {
       return moment().format('YYYY-MM-DD')
@@ -120,18 +139,27 @@ export default {
     }, 500)
   },
   async mounted() {
-    if (!this.userLoaded) {
+    this.processSocketMessages()
+
+    if (!this.loaded) {
       progress.start()
 
       await Promise.all([
-        this.$store.dispatch('GetUserInfo'),
-        this.$store.dispatch('FetchSuggestedMovies')
+        this.$store.dispatch('FetchSuggestedMovies'),
+        this.$store.dispatch('FetchUsers')
       ])
 
       progress.done()
     }
   },
+  beforeDestroy() {
+    this.socket.close()
+  },
   methods: {
+    nameToInstrumental(name) {
+      const rn = new RussianName(name)
+      return rn.fullName(rn.gcaseTvor)
+    },
     moviePosterURL(movie, width = '200', posterKey = 'poster_path') {
       if (!movie[posterKey]) {
         return
@@ -199,6 +227,28 @@ export default {
           date
         })
       }
+    },
+    processSocketMessages() {
+      const wsURL = 'ws://localhost:3000/cable'
+      this.socket = new WebSocket(wsURL)
+
+      this.socket.onmessage = (e) => {
+        const data = JSON.parse(e.data)
+        const type = t(data, 'message.type').safeObject
+
+        if (type === 'users_list') {
+          this.$store.dispatch('SetUsers', JSON.parse(data.message.users))
+        }
+      }
+      this.socket.onopen = () => {
+        const msg = {
+          command: 'subscribe',
+          identifier: JSON.stringify({
+            channel: 'OnlineChannel',
+          }),
+        };
+        this.socket.send(JSON.stringify(msg));
+      }
     }
   }
 }
@@ -214,5 +264,13 @@ export default {
 .suggested-movie {
   min-width: 45%;
   max-width: 50%;
+}
+.chosen-by {
+  font-size: 0.9em;
+  font-style: italic;
+  margin-bottom: 12px;
+}
+.card-title {
+  margin-bottom: 0;
 }
 </style>

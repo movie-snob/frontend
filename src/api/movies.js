@@ -32,7 +32,7 @@ export const markWatched = async (id, date) => {
 
 export const markUnwatched = async (id) => {
   return request({
-    url: `/films/${id}/watched`,
+    url: `/films/${id}/unwatched`,
     method: 'post'
   })
 }

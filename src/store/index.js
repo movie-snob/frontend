@@ -4,14 +4,14 @@ import Vuex from 'vuex'
 import getters from './getters'
 
 import auth from './modules/auth'
-import movies from './modules/movies'
+import app from './modules/app'
 
 Vue.use(Vuex)
 
 const store = new Vuex.Store({
   modules: {
     auth,
-    movies
+    app
   },
   getters
 })
