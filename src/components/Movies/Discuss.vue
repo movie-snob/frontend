@@ -1,43 +1,19 @@
 <template>
-  <layout>
-    <template #header>
-      <navbar/>
-    </template>
-    <h1>Обсуждения</h1>
-    <h2>Онлайн пользователи</h2>
-    <ul>
-      <li v-for="user in onlineUsers" :key="user.id">{{ user.name }}</li>
-    </ul>
-  </layout>
+  <b-modal :title="this.movieUnderDiscussion.title" v-model="this.isMovieUnderDiscussion" size="lg" id="discuss-modal">
+    123
+  </b-modal>
 </template>
 
 <script>
-import Layout from '../Layout'
-import Navbar from '../Navbar'
-
 import { mapGetters } from 'vuex'
 
 export default {
   name: 'Discuss',
-  data() {
-    return {
-      socket: null
-    }
-  },
-  components: {
-    'layout': Layout,
-    'navbar': Navbar
-  },
   computed: {
     ...mapGetters([
       'onlineUsers'
     ])
   },
-  mounted() {
-
-  },
-  beforeDestroy() {
-    this.socket.close()
-  }
+  props: ['movieUnderDiscussion', 'isMovieUnderDiscussion']
 }
 </script>

@@ -43,7 +43,7 @@
               <span>{{ user.name }}</span>
             </li>
           </ul>
-          <b-button variant="primary">Обсудить фильм</b-button>
+          <b-button variant="primary" @click="discussMovie(movie)">Обсудить фильм</b-button>
         </b-card>
       </b-card-group>
       <b-row>
@@ -84,6 +84,9 @@
           </ul>
         </b-col>
       </b-row>
+      <b-modal :title="`Обсуждаем «${movieUnderDiscussion.title}»`" v-model="isMovieUnderDiscussion" size="lg" id="discuss-modal">
+        123
+      </b-modal>
     </layout>
   </div>
 </template>
@@ -111,7 +114,9 @@ export default {
   data() {
     return {
       search: '',
-      socket: null
+      socket: null,
+      movieUnderDiscussion: {},
+      isMovieUnderDiscussion: false
     }
   },
   name: 'Suggested',
@@ -259,6 +264,10 @@ export default {
         };
         this.socket.send(JSON.stringify(msg));
       }
+    },
+    discussMovie(movie) {
+      this.isMovieUnderDiscussion = true
+      this.movieUnderDiscussion = movie
     }
   }
 }
