@@ -21,7 +21,9 @@
           :img-alt="movie.title"
           img-left>
           <b-card-text>
-            <div class="chosen-by">выбран {{ nameToInstrumental(movie.suggested_by.name) }}</div>
+            <div class="chosen-by">
+              выбран {{ nameToInstrumental(movie.suggested_by.name, movie.suggested_by.gender) }}
+            </div>
             <b-form-checkbox
               @change.native="onMovieWatchedChange($event, movie)"
               switch
@@ -32,14 +34,13 @@
               :value="movie.watched_on || today" />
             </b-form-checkbox>
           </b-card-text>
-          <ul>
-            <li
-              v-for="user in users"
-              :key="user.id">
-              <span>
-                {{ user.name }}
-              </span>
-              <b-badge v-if="user.watched_movies.includes(movie.id)">просмотрено</b-badge>
+          <ul class="watched-by">
+            <li v-for="user in users" :key="user.id">
+              <div class="icon">
+                <font-awesome-icon v-if="user.watched_movies.includes(movie.id)" class="check" icon="check-square" />
+                <font-awesome-icon v-if="!user.watched_movies.includes(movie.id)" class="times" icon="times" />
+              </div>
+              <span>{{ user.name }}</span>
             </li>
           </ul>
           <b-button variant="primary">Обсудить фильм</b-button>
@@ -94,11 +95,17 @@ import 'nprogress/nprogress.css'
 import debounce from 'lodash.debounce'
 import swal from 'sweetalert'
 import moment from 'moment'
-import t from 'typy'
-import RussianName from '../../lib/name'
+import jp from 'jsonpath'
+import petrovich from 'petrovich'
 
 import Layout from '../Layout'
 import Navbar from '../Navbar'
+
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faCheckSquare, faTimes } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+
+library.add(faCheckSquare, faTimes)
 
 export default {
   data() {
@@ -110,7 +117,8 @@ export default {
   name: 'Suggested',
   components: {
     'layout': Layout,
-    'navbar': Navbar
+    'navbar': Navbar,
+    'font-awesome-icon': FontAwesomeIcon
   },
   computed: {
     ...mapGetters([
@@ -156,9 +164,11 @@ export default {
     this.socket.close()
   },
   methods: {
-    nameToInstrumental(name) {
-      const rn = new RussianName(name)
-      return rn.fullName(rn.gcaseTvor)
+    nameToInstrumental(name, gender) {
+      const genders = ['male', 'female']
+      const userGender = genders[gender]
+
+      return petrovich[userGender].first.instrumental(name)
     },
     moviePosterURL(movie, width = '200', posterKey = 'poster_path') {
       if (!movie[posterKey]) {
@@ -234,7 +244,7 @@ export default {
 
       this.socket.onmessage = (e) => {
         const data = JSON.parse(e.data)
-        const type = t(data, 'message.type').safeObject
+        const type = jp.query(data, '$.message.type')
 
         if (type === 'users_list') {
           this.$store.dispatch('SetUsers', JSON.parse(data.message.users))
@@ -272,5 +282,27 @@ export default {
 }
 .card-title {
   margin-bottom: 0;
+}
+ul.watched-by {
+  list-style-type: none;
+  padding-left: 0;
+  li {
+    display: flex;
+    padding-left: 5px;
+    svg {
+      margin-right: 3px;
+    }
+    .check {
+      color: #28a745;
+    }
+    .times {
+      color: red;
+    }
+  }
+  .icon {
+    margin-right: 3px;
+    text-align: center;
+    width: 16px;
+  }
 }
 </style>

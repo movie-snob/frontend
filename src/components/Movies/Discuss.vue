@@ -16,7 +16,6 @@ import Layout from '../Layout'
 import Navbar from '../Navbar'
 
 import { mapGetters } from 'vuex'
-import t from 'typy'
 
 export default {
   name: 'Discuss',
