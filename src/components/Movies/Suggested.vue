@@ -43,7 +43,7 @@
               <span>{{ user.name }}</span>
             </li>
           </ul>
-          <b-button variant="primary" @click="reviewMovie(movie)">Обсудить фильм</b-button>
+          <b-button variant="primary" @click="reviewMovie(movie.id)">Обсудить фильм</b-button>
         </b-card>
       </b-card-group>
       <b-row>
@@ -73,10 +73,13 @@
               tag="li"
               title="Выбрать этот фильм"
               class="movie mb-3 p-2">
-              <b-img v-if="moviePosterURL(movie)" slot="aside" :src="moviePosterURL(movie)" width="150" :alt="movie.title"></b-img>
-
-              <h5 v-if="movie.release_date" class="mt-0 mb-1">{{ movie.original_title }} ({{ movieDateToYear(movie) }})</h5>
-              <h5 v-if="!movie.release_date" class="mt-0 mb-1">{{ movie.original_title }}</h5>
+              <b-img v-if="moviePosterURL(movie)" slot="aside" :src="moviePosterURL(movie)" width="150" :alt="movie.title"/>
+              <h5 v-if="movie.release_date" class="mt-0 mb-1">
+                {{ movie.original_title }} ({{ movieDateToYear(movie) }})
+              </h5>
+              <h5 v-if="!movie.release_date" class="mt-0 mb-1">
+                {{ movie.original_title }}
+              </h5>
               <p class="mb-0">
                 {{ movie.overview }}
               </p>
@@ -88,7 +91,7 @@
         <b-form @submit="onSubmitScore" class="mb-sm-3">
           <h6>Моя оценка:</h6>
           <b-input-group>
-            <b-form-input autofocus size="lg" v-model="newScore" v-on:keyup.enter="onSubmitScore" maxlength="2"></b-form-input>
+            <b-form-input autofocus size="lg" v-model="newScore" maxlength="2"></b-form-input>
             <b-input-group-append>
               <b-button size="sm" variant="primary" @click="onSubmitScore">
                 Отправить
@@ -98,9 +101,8 @@
         </b-form>
         <table class="discussion-table">
           <tr>
-            <td v-for="user in users" :key="user.id" class="discussion-table__username" >
+            <td v-for="user in users" :key="user.id" class="discussion-table__username">
               {{ user.name }}
-              <!-- <span class="online-indicator" :class="{ online: user.online, offline: !user.online }"><font-awesome-icon icon="circle" /></span> -->
             </td>
           </tr>
           <tr>
@@ -108,7 +110,7 @@
               <font-awesome-icon v-if="!userScore(movieUnderReview, user)" class="question" icon="question" />
               <font-awesome-icon v-if="user.id !== userId && userScore(movieUnderReview, user)" class="check" icon="check" />
               <strong v-highlight="movieUnderReview.score" v-if="user.id === userId && userScore(movieUnderReview, user)">
-                {{ movieUnderReview.score }}
+                {{ userScore(movieUnderReview, user) }}
               </strong>
             </td>
           </tr>
@@ -143,7 +145,8 @@ export default {
       search: '',
       socket: null,
       discussionInProgress: false,
-      newScore: null
+      newScore: null,
+      movieUnderReviewId: null
     }
   },
   name: 'Suggested',
@@ -160,14 +163,16 @@ export default {
       'suggestedMovies',
       'suggestedMoviesLoaded',
       'users',
-      'usersLoaded',
-      'movieUnderReview'
+      'usersLoaded'
     ]),
     loaded() {
       return this.suggestedMoviesLoaded && this.usersLoaded
     },
     today() {
       return moment().format('YYYY-MM-DD')
+    },
+    movieUnderReview() {
+      return this.suggestedMovies.find(movie => this.movieUnderReviewId === movie.id) || {}
     }
   },
   created() {
@@ -277,27 +282,34 @@ export default {
 
       this.socket.onmessage = (e) => {
         const data = JSON.parse(e.data)
-        const type = jp.query(data, '$.message.type')
+        const type = jp.query(data, '$.message.type')[0]
 
-        if (type === 'users_list') {
-          this.$store.dispatch('SetUsers', JSON.parse(data.message.users))
+        if (type === 'scores') {
+          this.$store.dispatch('SetScores', { id: data.message.movie_id, scores: data.message.scores })
         }
       }
       this.socket.onopen = () => {
         const msg = {
           command: 'subscribe',
           identifier: JSON.stringify({
-            channel: 'OnlineChannel',
+            channel: 'ReviewChannel',
           }),
         };
         this.socket.send(JSON.stringify(msg));
       }
     },
-    reviewMovie(movie) {
-      this.$store.dispatch('SetMovieUnderReview', movie)
+    reviewMovie(movieId) {
+      this.newScore = null
+      this.movieUnderReviewId = movieId
+      this.$store.dispatch('SetMovieUnderReview', movieId)
       this.discussionInProgress = true
     },
     onSubmitScore() {
+      const score = parseInt(this.newScore)
+
+      if (isNaN(score) || score < 1 || score > 10) {
+        return
+      }
       this.$store.dispatch('ScoreMovie', {
         id: this.movieUnderReview.id,
         score: this.newScore

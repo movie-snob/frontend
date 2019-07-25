@@ -9,7 +9,7 @@ const getters = {
   suggestedMoviesLoaded: state => state.app.suggestedMoviesLoaded,
   users: state => state.app.users,
   usersLoaded: state => state.app.usersLoaded,
-  movieUnderReview: state => state.app.movieUnderReview
+  movieUnderReview: state => state.app.suggested.find(movie => movie.under_review) || {}
 }
 
 export default getters

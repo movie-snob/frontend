@@ -59,11 +59,24 @@ const app = {
       state.users = users
       state.usersLoaded = true
     },
-    'SET_MOVIE_UNDER_REVIEW': (state, movie) => {
-      state.movieUnderReview = movie
+    'SET_MOVIE_UNDER_REVIEW': (state, movieId) => {
+      state.suggested = state.suggested.map(movie => {
+        movie.under_review = (movie.id === movieId)
+
+        return movie
+      })
     },
     'SET_MOVIE_SCORE': (state, score) => {
       state.movieUnderReview.score = score
+    },
+    'SET_MOVIE_SCORES': (state, { id, scores }) => {
+      state.suggested = state.suggested.map(movie => {
+        if (movie.id === id) {
+          movie.scores = scores
+        }
+
+        return movie
+      })
     }
   },
   actions: {
@@ -103,13 +116,16 @@ const app = {
     async SetUsers({ commit }, users) {
       commit('SET_USERS', users)
     },
-    SetMovieUnderReview({ commit }, movie) {
-      commit('SET_MOVIE_UNDER_REVIEW', movie)
+    SetMovieUnderReview({ commit }, movieId) {
+      commit('SET_MOVIE_UNDER_REVIEW', movieId)
     },
     ScoreMovie({ commit }, { id, score }) {
       scoreMovie(id, score)
 
       commit('SET_MOVIE_SCORE', score)
+    },
+    SetScores({ commit }, { id, scores }) {
+      commit('SET_MOVIE_SCORES', { id, scores })
     }
   }
 }
