@@ -93,7 +93,7 @@
           <b-input-group>
             <b-form-input autofocus size="lg" v-model="newScore" maxlength="2"></b-form-input>
             <b-input-group-append>
-              <b-button size="sm" variant="primary" @click="onSubmitScore">
+              <b-button size="sm" variant="primary" type="submit">
                 Отправить
               </b-button>
             </b-input-group-append>
@@ -107,9 +107,9 @@
           </tr>
           <tr>
             <td v-for="user in users" :key="user.id" class="discussion-table__score">
-              <font-awesome-icon v-if="!userScore(movieUnderReview, user)" class="question" icon="question" />
-              <font-awesome-icon v-if="user.id !== userId && userScore(movieUnderReview, user)" class="check" icon="check" />
-              <strong v-highlight="movieUnderReview.score" v-if="user.id === userId && userScore(movieUnderReview, user)">
+              <font-awesome-icon v-if="showQuestionMark(user)" class="question" icon="question" />
+              <font-awesome-icon v-if="showCheck(user)" class="check" icon="check" />
+              <strong v-highlight="movieUnderReview.score" v-if="showUserScore(user)">
                 {{ userScore(movieUnderReview, user) }}
               </strong>
             </td>
@@ -146,7 +146,8 @@ export default {
       socket: null,
       discussionInProgress: false,
       newScore: null,
-      movieUnderReviewId: null
+      movieUnderReviewId: null,
+      socketConnectionInterval: null
     }
   },
   name: 'Suggested',
@@ -173,10 +174,25 @@ export default {
     },
     movieUnderReview() {
       return this.suggestedMovies.find(movie => this.movieUnderReviewId === movie.id) || {}
+    },
+    allUsersVoted() {
+      const userCount = this.users.length
+
+      if (!this.movieUnderReview.scores) {
+        return false
+      }
+
+      return this.movieUnderReview.scores.filter(movie => movie.score !== null).length === userCount
     }
   },
   created() {
-    this.processSocketMessages()
+    this.connectToWebSocket()
+
+    this.socketConnectionInterval = setInterval(() => {
+      if (this.socket.readyState !== WebSocket.OPEN) {
+        this.connectToWebSocket()
+      }
+    }, 300);
 
     this.handleDebounceSearchInput = debounce(async (query) => {
       progress.start()
@@ -276,16 +292,18 @@ export default {
         })
       }
     },
-    processSocketMessages() {
-      const wsURL = 'ws://localhost:3000/cable'
-      this.socket = new WebSocket(wsURL)
+    connectToWebSocket() {
+      this.socket = new WebSocket('ws://localhost:3000/cable')
 
       this.socket.onmessage = (e) => {
         const data = JSON.parse(e.data)
         const type = jp.query(data, '$.message.type')[0]
 
         if (type === 'scores') {
-          this.$store.dispatch('SetScores', { id: data.message.movie_id, scores: data.message.scores })
+          this.$store.dispatch('SetScores', {
+            id: data.message.movie_id,
+            scores: data.message.scores
+          })
         }
       }
       this.socket.onopen = () => {
@@ -304,7 +322,9 @@ export default {
       this.$store.dispatch('SetMovieUnderReview', movieId)
       this.discussionInProgress = true
     },
-    onSubmitScore() {
+    onSubmitScore(e) {
+      e.preventDefault()
+
       const score = parseInt(this.newScore)
 
       if (isNaN(score) || score < 1 || score > 10) {
@@ -317,6 +337,15 @@ export default {
     },
     userScore(movie, user) {
       return jp.query(movie, `$.scores[?(@.user_id == ${user.id})].score`)[0]
+    },
+    showUserScore(user) {
+      return user.id === this.userId && this.userScore(this.movieUnderReview, user) || this.allUsersVoted
+    },
+    showQuestionMark(user) {
+      return !this.userScore(this.movieUnderReview, user)
+    },
+    showCheck(user) {
+      return (user.id !== this.userId && this.userScore(this.movieUnderReview, user)) && !this.allUsersVoted
     }
   }
 }
