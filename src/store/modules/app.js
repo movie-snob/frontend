@@ -1,5 +1,5 @@
 import { searchMovie } from '../../api/moviesDB'
-import { suggestMovie, fetchSuggestedMovies, markWatched, markUnwatched } from '../../api/movies';
+import { suggestMovie, fetchSuggestedMovies, markWatched, markUnwatched, scoreMovie } from '../../api/movies';
 import { fetchUsers } from '../../api/users'
 
 const app = {
@@ -10,7 +10,8 @@ const app = {
     suggested: [],
     suggestedMoviesLoaded: false,
     users: [],
-    usersLoaded: false
+    usersLoaded: false,
+    movieUnderReview: {}
   },
   mutations: {
     'SET_SEARCH_RESULTS': (state, movies) => {
@@ -57,6 +58,12 @@ const app = {
     'SET_USERS': (state, users) => {
       state.users = users
       state.usersLoaded = true
+    },
+    'SET_MOVIE_UNDER_REVIEW': (state, movie) => {
+      state.movieUnderReview = movie
+    },
+    'SET_MOVIE_SCORE': (state, score) => {
+      state.movieUnderReview.score = score
     }
   },
   actions: {
@@ -95,6 +102,14 @@ const app = {
     },
     async SetUsers({ commit }, users) {
       commit('SET_USERS', users)
+    },
+    SetMovieUnderReview({ commit }, movie) {
+      commit('SET_MOVIE_UNDER_REVIEW', movie)
+    },
+    ScoreMovie({ commit }, { id, score }) {
+      scoreMovie(id, score)
+
+      commit('SET_MOVIE_SCORE', score)
     }
   }
 }

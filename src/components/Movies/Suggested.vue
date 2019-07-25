@@ -43,7 +43,7 @@
               <span>{{ user.name }}</span>
             </li>
           </ul>
-          <b-button variant="primary" @click="discussMovie(movie)">Обсудить фильм</b-button>
+          <b-button variant="primary" @click="reviewMovie(movie)">Обсудить фильм</b-button>
         </b-card>
       </b-card-group>
       <b-row>
@@ -84,8 +84,35 @@
           </ul>
         </b-col>
       </b-row>
-      <b-modal :title="`Обсуждаем «${movieUnderDiscussion.title}»`" v-model="isMovieUnderDiscussion" size="lg" id="discuss-modal">
-        123
+      <b-modal hide-footer :title="`Обсуждаем «${movieUnderReview.title}»`" v-model="discussionInProgress" id="discuss-modal">
+        <b-form @submit="onSubmitScore" class="mb-sm-3">
+          <h6>Моя оценка:</h6>
+          <b-input-group>
+            <b-form-input autofocus size="lg" v-model="newScore" v-on:keyup.enter="onSubmitScore" maxlength="2"></b-form-input>
+            <b-input-group-append>
+              <b-button size="sm" variant="primary" @click="onSubmitScore">
+                Отправить
+              </b-button>
+            </b-input-group-append>
+          </b-input-group>
+        </b-form>
+        <table class="discussion-table">
+          <tr>
+            <td v-for="user in users" :key="user.id" class="discussion-table__username" >
+              {{ user.name }}
+              <!-- <span class="online-indicator" :class="{ online: user.online, offline: !user.online }"><font-awesome-icon icon="circle" /></span> -->
+            </td>
+          </tr>
+          <tr>
+            <td v-for="user in users" :key="user.id" class="discussion-table__score">
+              <font-awesome-icon v-if="!userScore(movieUnderReview, user)" class="question" icon="question" />
+              <font-awesome-icon v-if="user.id !== userId && userScore(movieUnderReview, user)" class="check" icon="check" />
+              <strong v-highlight="movieUnderReview.score" v-if="user.id === userId && userScore(movieUnderReview, user)">
+                {{ movieUnderReview.score }}
+              </strong>
+            </td>
+          </tr>
+        </table>
       </b-modal>
     </layout>
   </div>
@@ -105,18 +132,18 @@ import Layout from '../Layout'
 import Navbar from '../Navbar'
 
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faCheckSquare, faTimes } from '@fortawesome/free-solid-svg-icons'
+import { faCheckSquare, faCheck, faTimes, faQuestion, faCircle } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
-library.add(faCheckSquare, faTimes)
+library.add(faCheckSquare, faCheck, faTimes, faQuestion, faCircle)
 
 export default {
   data() {
     return {
       search: '',
       socket: null,
-      movieUnderDiscussion: {},
-      isMovieUnderDiscussion: false
+      discussionInProgress: false,
+      newScore: null
     }
   },
   name: 'Suggested',
@@ -127,13 +154,14 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'userName',
+      'userId',
       'userLoaded',
       'foundMovies',
       'suggestedMovies',
       'suggestedMoviesLoaded',
       'users',
-      'usersLoaded'
+      'usersLoaded',
+      'movieUnderReview'
     ]),
     loaded() {
       return this.suggestedMoviesLoaded && this.usersLoaded
@@ -143,6 +171,8 @@ export default {
     }
   },
   created() {
+    this.processSocketMessages()
+
     this.handleDebounceSearchInput = debounce(async (query) => {
       progress.start()
 
@@ -152,8 +182,6 @@ export default {
     }, 500)
   },
   async mounted() {
-    this.processSocketMessages()
-
     if (!this.loaded) {
       progress.start()
 
@@ -265,9 +293,18 @@ export default {
         this.socket.send(JSON.stringify(msg));
       }
     },
-    discussMovie(movie) {
-      this.isMovieUnderDiscussion = true
-      this.movieUnderDiscussion = movie
+    reviewMovie(movie) {
+      this.$store.dispatch('SetMovieUnderReview', movie)
+      this.discussionInProgress = true
+    },
+    onSubmitScore() {
+      this.$store.dispatch('ScoreMovie', {
+        id: this.movieUnderReview.id,
+        score: this.newScore
+      })
+    },
+    userScore(movie, user) {
+      return jp.query(movie, `$.scores[?(@.user_id == ${user.id})].score`)[0]
     }
   }
 }
@@ -301,17 +338,54 @@ ul.watched-by {
     svg {
       margin-right: 3px;
     }
-    .check {
-      color: #28a745;
-    }
-    .times {
-      color: red;
-    }
   }
   .icon {
     margin-right: 3px;
     text-align: center;
     width: 16px;
   }
+}
+.check {
+  color: #28a745;
+}
+.times {
+  color: red;
+}
+.question {
+  color: #e0e0e0;
+}
+.online-indicator {
+  display: inline-block;
+  position: relative;
+  top: -8px;
+  font-size: 7px;
+  left: -2px;
+  &.online {
+    color: #21d421;
+  }
+  &.offline {
+    color: red;
+  }
+}
+.discussion-table {
+  width: 100%;
+  text-align: center;
+  td {
+    padding: 5px;
+  }
+  &__score {
+    font-size: 1.5em;
+  }
+}
+@keyframes highlight {
+  0% {background-color: transparent;}
+  50% {background-color: yellow;}
+  100% {background-color: transparent;}
+}
+
+.highlight {
+  padding: 0 5px;
+  animation-name: highlight;
+  animation-duration: 1s;
 }
 </style>

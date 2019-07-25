@@ -7,6 +7,7 @@ const auth = {
     user: {
       name: '',
       email: '',
+      id: '',
       loaded: false
     }
   },

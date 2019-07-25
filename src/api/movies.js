@@ -36,3 +36,13 @@ export const markUnwatched = async (id) => {
     method: 'post'
   })
 }
+
+export const scoreMovie = async (id, score) => {
+  return request({
+    url: `/films/${id}/score`,
+    method: 'patch',
+    data: {
+      score
+    }
+  })
+}
