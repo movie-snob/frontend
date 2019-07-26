@@ -63,7 +63,7 @@ export default {
   methods: {
     async register(e) {
       const formData = new FormData(e.target)
-      const [name, email, password] = [
+      const [name, email, password, gender] = [
         formData.get('name'),
         formData.get('email'),
         formData.get('password'),
