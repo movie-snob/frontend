@@ -1,5 +1,5 @@
 import { searchMovie } from '../../api/moviesDB'
-import { suggestMovie, fetchSuggestedMovies, markWatched, markUnwatched, scoreMovie } from '../../api/movies';
+import { suggestMovie, fetchSuggestedMovies, markWatched, markUnwatched, scoreMovie, removeMovie } from '../../api/movies';
 import { fetchUsers } from '../../api/users'
 
 const app = {
@@ -77,6 +77,9 @@ const app = {
 
         return movie
       })
+    },
+    'REMOVE_SUGGESTED_MOVIE': (state, id) => {
+      state.suggested = state.suggested.filter(movie => movie.id !== id)
     }
   },
   actions: {
@@ -92,6 +95,11 @@ const app = {
       const response = await suggestMovie(title, year, poster, movieDBId)
 
       commit('SET_SUGGESTED', response.data)
+    },
+    async RemoveMovieSuggestion({ commit }, id) {
+      removeMovie(id)
+
+      commit('REMOVE_SUGGESTED_MOVIE', id)
     },
     async FetchSuggestedMovies({ commit }) {
       const response = await fetchSuggestedMovies()

@@ -13,6 +13,13 @@ export const suggestMovie = async (title, year, poster, movieDBId) => {
   })
 }
 
+export const removeMovie = async (id) => {
+  return request({
+    url: `/films/${id}`,
+    method: 'delete'
+  })
+}
+
 export const fetchSuggestedMovies = async () => {
   return request({
     url: '/films/suggested',

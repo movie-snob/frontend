@@ -10,9 +10,10 @@
           <b-navbar-nav>
           </b-navbar-nav>
           <b-navbar-nav class="ml-auto">
-            <b-nav-text>
-              {{ userName }}
-            </b-nav-text>
+            <b-nav-item-dropdown right>
+              <template slot="button-content">{{ userName }}</template>
+              <b-dropdown-item @click="logout">Выйти</b-dropdown-item>
+            </b-nav-item-dropdown>
           </b-navbar-nav>
         </b-collapse>
       </b-container>
@@ -43,5 +44,15 @@ export default {
       progress.done()
     }
   },
+  methods: {
+    logout() {
+      this.loading = true
+
+      this.$store.dispatch('Logout')
+      this.$router.push('login')
+
+      this.loading = false
+    }
+  }
 }
 </script>

@@ -43,7 +43,9 @@
               <span>{{ user.name }}</span>
             </li>
           </ul>
-          <b-button variant="primary" @click="reviewMovie(movie.id)">Обсудить фильм</b-button>
+          <b-button variant="primary" @click="reviewMovie(movie.id)">Обсудить</b-button>
+          &nbsp;
+          <b-button v-if="movie.suggested_by.id === userId" variant="danger" @click="deleteMovie(movie)">Удалить</b-button>
         </b-card>
       </b-card-group>
       <b-row>
@@ -314,7 +316,9 @@ export default {
             channel: 'ReviewChannel',
           }),
         };
-        this.socket.send(JSON.stringify(msg));
+        if (this.socket.readyState === WebSocket.OPEN) {
+          this.socket.send(JSON.stringify(msg));
+        }
       }
     },
     reviewMovie(movieId) {
@@ -322,6 +326,17 @@ export default {
       this.movieUnderReviewId = movieId
       this.$store.dispatch('SetMovieUnderReview', movieId)
       this.discussionInProgress = true
+    },
+    async deleteMovie(movie) {
+      const confirm = await swal(`Удалить «${movie.title}»?`, {
+        buttons: ["Нет", "Да!"],
+      });
+
+      if (!confirm) {
+        return
+      }
+
+      this.$store.dispatch('RemoveMovieSuggestion', movie.id)
     },
     onSubmitScore(e) {
       e.preventDefault()

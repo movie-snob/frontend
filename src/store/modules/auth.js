@@ -1,5 +1,5 @@
 import { login, register, getInfo } from '../../api/auth'
-import { setToken } from '../../utils/auth'
+import { setToken, removeToken } from '../../utils/auth'
 
 const auth = {
   state: {
@@ -16,6 +16,12 @@ const auth = {
     'SET_TOKEN': (state, token) => {
       setToken(token)
       state.token = token
+    },
+    'REMOVE_TOKEN': (state) => {
+      removeToken()
+
+      const { token, ...newState } = state
+      state = newState
     },
     'SET_INFO': (state, { id, name, email }) => {
       state.user.name = name
@@ -40,6 +46,9 @@ const auth = {
     async GetUserInfo({ commit }) {
       const infoResponse = await getInfo()
       commit('SET_INFO', infoResponse.data)
+    },
+    Logout({ commit }) {
+      commit('REMOVE_TOKEN')
     }
   }
 }
