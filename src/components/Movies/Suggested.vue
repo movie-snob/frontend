@@ -229,7 +229,7 @@ export default {
         return
       }
 
-      return `http://image.tmdb.org/t/p/w${width}${movie[posterKey]}`
+      return `https://image.tmdb.org/t/p/w${width}${movie[posterKey]}`
     },
     movieDateToYear(movie) {
       if (!movie.release_date) {
