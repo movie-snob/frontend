@@ -296,25 +296,27 @@ export default {
       const protocol = (window.location.protocol === "https:") ? "wss://" : "ws://"
       this.socket = new WebSocket(`${protocol}${window.location.host}/api/cable`)
 
-      this.socket.onmessage = (e) => {
-        const data = JSON.parse(e.data)
-        const type = jp.query(data, '$.message.type')[0]
+      if (this.socket.readyState === WebSocket.OPEN) {
+        this.socket.onmessage = (e) => {
+          const data = JSON.parse(e.data)
+          const type = jp.query(data, '$.message.type')[0]
 
-        if (type === 'scores') {
-          this.$store.dispatch('SetScores', {
-            id: data.message.movie_id,
-            scores: data.message.scores
-          })
+          if (type === 'scores') {
+            this.$store.dispatch('SetScores', {
+              id: data.message.movie_id,
+              scores: data.message.scores
+            })
+          }
         }
-      }
-      this.socket.onopen = () => {
-        const msg = {
-          command: 'subscribe',
-          identifier: JSON.stringify({
-            channel: 'ReviewChannel',
-          }),
-        };
-        this.socket.send(JSON.stringify(msg));
+        this.socket.onopen = () => {
+          const msg = {
+            command: 'subscribe',
+            identifier: JSON.stringify({
+              channel: 'ReviewChannel',
+            }),
+          };
+          this.socket.send(JSON.stringify(msg));
+        }
       }
     },
     reviewMovie(movieId) {
