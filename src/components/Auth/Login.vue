@@ -7,6 +7,7 @@
         </b-col>
       </b-row>
       <b-form @submit="login">
+        <b-alert variant="danger" :show="showError">Логин или пароль не верны</b-alert>
         <b-form-group>
           <b-form-input
             name="email"
@@ -34,7 +35,8 @@
 export default {
   data() {
     return {
-      loading: false
+      loading: false,
+      showError: false
     }
   },
   name: 'Login',
@@ -42,11 +44,20 @@ export default {
     async login(e) {
       const formData = new FormData(e.target)
       const [email, password] = [formData.get('email'), formData.get('password')]
+      let err
 
       e.preventDefault()
 
+      this.showError = false
       this.loading = true
-      await this.$store.dispatch('Login', { email, password })
+
+      try {
+        await this.$store.dispatch('Login', { email, password })
+      } catch {
+        this.showError = true
+      } finally {
+        this.loading = false
+      }
 
       this.$router.push('/movies/suggested')
       this.loading = false

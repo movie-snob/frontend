@@ -218,6 +218,7 @@ export default {
   },
   beforeDestroy() {
     this.socket.close()
+    clearInterval(this.socketConnectionInterval)
   },
   methods: {
     nameToInstrumental(name, gender) {
