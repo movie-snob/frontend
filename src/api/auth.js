@@ -1,13 +1,14 @@
 import request from '../utils/request'
 
-export const register = async (name, email, password) => {
+export const register = async (name, email, password, gender) => {
   return request({
     url: '/register',
     method: 'post',
     data: {
       name,
       email,
-      password
+      password,
+      gender
     }
   })
 }

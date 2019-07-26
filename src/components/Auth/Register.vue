@@ -35,7 +35,7 @@
             :options="genders"
             buttons
             button-variant="outline-primary"
-            name="radio-btn-outline"
+            name="gender"
           ></b-form-radio-group>
         </b-form-group>
         <b-button :disabled="loading" type="submit" block variant="primary">
@@ -63,12 +63,17 @@ export default {
   methods: {
     async register(e) {
       const formData = new FormData(e.target)
-      const [name, email, password] = [formData.get('name'), formData.get('email'), formData.get('password')]
+      const [name, email, password] = [
+        formData.get('name'),
+        formData.get('email'),
+        formData.get('password'),
+        formData.get('gender')
+      ]
 
       e.preventDefault()
 
       this.loading = true
-      await this.$store.dispatch('Register', { name, email, password })
+      await this.$store.dispatch('Register', { name, email, password, gender })
 
       this.$router.push('/movies/suggested')
       this.loading = false

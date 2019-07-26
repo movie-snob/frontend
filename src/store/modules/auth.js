@@ -7,6 +7,7 @@ const auth = {
     user: {
       name: '',
       email: '',
+      gender: null,
       id: '',
       loaded: false
     }
@@ -24,8 +25,8 @@ const auth = {
     }
   },
   actions: {
-    async Register({ commit, dispatch }, { name, email, password }) {
-      const registerResponse = await register(name, email, password)
+    async Register({ commit, dispatch }, { name, email, password, gender }) {
+      const registerResponse = await register(name, email, password, gender)
       commit('SET_TOKEN', registerResponse.data.token)
 
       dispatch('GetUserInfo')
