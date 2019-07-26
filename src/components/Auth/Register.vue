@@ -12,6 +12,7 @@
             autofocus
             type="text"
             name="name"
+            required
             placeholder="Имя"/>
         </b-form-group>
         <b-form-group>

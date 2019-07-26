@@ -293,7 +293,8 @@ export default {
       }
     },
     connectToWebSocket() {
-      this.socket = new WebSocket('ws://localhost:3000/cable')
+      const protocol = (window.location.protocol === "https:") ? "wss://" : "ws://"
+      this.socket = new WebSocket(`${protocol}${window.location.host}/api/cable`)
 
       this.socket.onmessage = (e) => {
         const data = JSON.parse(e.data)
