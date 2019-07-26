@@ -3,7 +3,7 @@ import axios from 'axios'
 import { getToken } from '../utils/auth'
 
 const service = axios.create({
-  baseURL: "http://localhost:3000",
+  baseURL: "/api",
   timeout: 5000
 })
 
