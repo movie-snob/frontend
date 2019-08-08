@@ -428,6 +428,7 @@ ul.watched-by {
 .discussion-table {
   width: 100%;
   text-align: center;
+  table-layout: fixed;
   td {
     padding: 5px;
   }
