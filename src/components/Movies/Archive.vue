@@ -34,6 +34,7 @@
 import { mapGetters } from 'vuex'
 
 import progress from 'nprogress'
+import moment from 'moment'
 
 import Layout from '../Layout'
 import Navbar from '../Navbar'
@@ -58,7 +59,8 @@ export default {
         {
           key: 'watched_on',
           label: 'Дата',
-          sortable: true
+          sortable: true,
+          formatter: value => moment(value * 1000).format('DD.MM.YYYY')
         },
         {
           key: 'title',
@@ -76,7 +78,8 @@ export default {
         ...this.userNames,
         {
           key: 'avg',
-          label: 'Средняя оценка'
+          label: 'Средняя оценка',
+          sortable: true
         }
       ]
     },
@@ -101,5 +104,10 @@ export default {
       progress.done()
     }
   },
+  methods: {
+    normalizeDate(value) {
+      return moment(value).format('DD.MM.YYYY')
+    }
+  }
 }
 </script>
