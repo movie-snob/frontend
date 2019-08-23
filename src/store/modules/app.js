@@ -1,5 +1,5 @@
 import { searchMovie } from '../../api/moviesDB'
-import { suggestMovie, fetchSuggestedMovies, markWatched, markUnwatched, scoreMovie, removeMovie } from '../../api/movies';
+import { suggestMovie, fetchSuggestedMovies, fetchReviewedMovies, markWatched, markUnwatched, scoreMovie, removeMovie } from '../../api/movies';
 import { fetchUsers } from '../../api/users'
 
 const app = {
@@ -9,6 +9,8 @@ const app = {
     },
     suggested: [],
     suggestedMoviesLoaded: false,
+    reviewed: [],
+    reviewedMoviesLoaded: false,
     users: [],
     usersLoaded: false,
     movieUnderReview: {}
@@ -20,6 +22,10 @@ const app = {
     'SET_SUGGESTED': (state, movies) => {
       state.suggested = movies
       state.suggestedMoviesLoaded = true
+    },
+    'SET_REVIEWED': (state, movies) => {
+      state.reviewed = movies
+      state.reviewedMoviesLoaded = true
     },
     'SET_WATCHED': (state, { movieId, userId, date }) => {
       state.suggested = state.suggested.map(movie => {
@@ -105,6 +111,11 @@ const app = {
       const response = await fetchSuggestedMovies()
 
       commit('SET_SUGGESTED', response.data)
+    },
+    async FetchReviewedMovies({ commit }) {
+      const response = await fetchReviewedMovies()
+
+      commit('SET_REVIEWED', response.data)
     },
     MarkWatched({ commit, rootState }, { id, date }) {
       markWatched(id, date)

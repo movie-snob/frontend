@@ -1,11 +1,11 @@
 <template>
   <div>
     <header>
-      <slot name="header"></slot>
+      <slot name="header" />
     </header>
     <main>
       <b-container>
-        <slot></slot>
+        <slot />
       </b-container>
     </main>
   </div>

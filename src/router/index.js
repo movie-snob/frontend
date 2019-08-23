@@ -13,7 +13,6 @@ const routerMap = [
   { path: '/register', component: () => import('../components/Auth/Register') },
   { path: '/login', component: () => import('../components/Auth/Login') },
   { path: '/movies/suggested', component: () => import('../components/Movies/Suggested') },
-  { path: '/movies/discuss', component: () => import('../components/Movies/Discuss') },
   { path: '/movies/archive', component: () => import('../components/Movies/Archive') },
   { path: '*', redirect: '/' }
 ]

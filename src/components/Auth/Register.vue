@@ -13,7 +13,8 @@
             type="text"
             name="name"
             required
-            placeholder="Имя"/>
+            placeholder="Имя"
+          />
         </b-form-group>
         <b-form-group>
           <b-form-input
@@ -24,10 +25,17 @@
             autocomplete="email"
             autocorrect="off"
             autocapitalize="off"
-            spellcheck="false" />
+            spellcheck="false"
+          />
         </b-form-group>
         <b-form-group>
-          <b-form-input name="password" type="password" required placeholder="Пароль" autocomplete="current-password" />
+          <b-form-input
+            name="password"
+            type="password"
+            required
+            placeholder="Пароль"
+            autocomplete="current-password"
+          />
         </b-form-group>
         <b-form-group label="Пол:">
           <b-form-radio-group
@@ -36,13 +44,26 @@
             buttons
             button-variant="outline-primary"
             name="gender"
-          ></b-form-radio-group>
+          />
         </b-form-group>
-        <b-button :disabled="loading" type="submit" block variant="primary">
-          <b-spinner v-if="loading" small></b-spinner>
+        <b-button
+          :disabled="loading"
+          type="submit"
+          block
+          variant="primary"
+        >
+          <b-spinner
+            v-if="loading"
+            small
+          />
           Зарегистрироваться
         </b-button>
-        <router-link class="login" to="/login">войти</router-link>
+        <router-link
+          class="login"
+          to="/login"
+        >
+          войти
+        </router-link>
       </b-form>
     </b-container>
   </div>
@@ -50,6 +71,7 @@
 
 <script>
 export default {
+  name: 'Register',
   data() {
     return {
       loading: false,
@@ -59,7 +81,6 @@ export default {
       ]
     }
   },
-  name: 'Register',
   methods: {
     async register(e) {
       const formData = new FormData(e.target)

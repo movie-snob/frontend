@@ -3,83 +3,132 @@
   <div v-if="loaded">
     <layout>
       <template #header>
-        <navbar/>
+        <navbar />
       </template>
       <b-row>
         <b-col>
-          <h6 class="mt-3">Предложенные фильмы</h6>
+          <h4 class="mt-3 mb-3">
+            Предложенные фильмы
+          </h4>
         </b-col>
       </b-row>
-      <b-card-group deck v-if="suggestedMovies.length > 0">
+      <b-card-group
+        v-if="suggestedMovies.length > 0"
+        deck
+      >
         <b-card
+          v-for="movie in suggestedMovies"
+          :key="movie.id"
           class="mb-3 suggested-movie"
           title-tag="h5"
           :title="movie.title"
-          v-for="movie in suggestedMovies"
-          :key="movie.id"
           :img-src="moviePosterURL(movie, '200', 'poster')"
           :img-alt="movie.title"
-          img-left>
+          img-left
+        >
           <b-card-text>
             <div class="chosen-by">
               выбран {{ nameToInstrumental(movie.suggested_by.name, movie.suggested_by.gender) }}
             </div>
             <b-form-checkbox
-              @change.native="onMovieWatchedChange($event, movie)"
               switch
-              :checked="movie.watched_on !== null">
+              :checked="movie.watched_on !== null"
+              @change.native="onMovieWatchedChange($event, movie)"
+            >
               Просмотрено
               <b-form-input
-              type="date"
-              :value="movie.watched_on || today" />
+                type="date"
+                :value="movie.watched_on || today"
+              />
             </b-form-checkbox>
           </b-card-text>
           <ul class="watched-by">
-            <li v-for="user in users" :key="user.id">
+            <li
+              v-for="user in users"
+              :key="user.id"
+            >
               <div class="icon">
-                <font-awesome-icon v-if="user.watched_movies.includes(movie.id)" class="check" icon="check-square" />
-                <font-awesome-icon v-if="!user.watched_movies.includes(movie.id)" class="times" icon="times" />
+                <font-awesome-icon
+                  v-if="user.watched_movies.includes(movie.id)"
+                  class="check"
+                  icon="check-square"
+                />
+                <font-awesome-icon
+                  v-if="!user.watched_movies.includes(movie.id)"
+                  class="times"
+                  icon="times"
+                />
               </div>
               <span>{{ user.name }}</span>
             </li>
           </ul>
-          <b-button variant="primary" @click="reviewMovie(movie.id)">Обсудить</b-button>
+          <b-button
+            variant="primary"
+            @click="reviewMovie(movie.id)"
+          >
+            Обсудить
+          </b-button>
           &nbsp;
-          <b-button v-if="movie.suggested_by.id === userId" variant="danger" @click="deleteMovie(movie)">Удалить</b-button>
+          <b-button
+            v-if="movie.suggested_by.id === userId"
+            variant="danger"
+            @click="deleteMovie(movie)"
+          >
+            Удалить
+          </b-button>
         </b-card>
       </b-card-group>
       <b-row>
         <b-col>
-          <h6 class="mt-3">Предложить фильм</h6>
+          <h6 class="mt-3">
+            Предложить фильм
+          </h6>
         </b-col>
       </b-row>
       <b-row class="mb-4">
         <b-col>
           <b-form-input
+            v-model="search"
             autocorrect="off"
             autocapitalize="off"
             spellcheck="false"
             autofocus
-            v-model="search"
+            placeholder="Введите название фильма"
             @input="handleDebounceSearchInput"
-            placeholder="Введите название фильма"/>
+          />
         </b-col>
       </b-row>
       <b-row>
         <b-col>
-          <ul v-if="foundMovies.length > 0" class="list-unstyled">
+          <ul
+            v-if="foundMovies.length > 0"
+            class="list-unstyled"
+          >
             <b-media
-              @click="onSuggestedMovieClick(movie)"
               v-for="movie in foundMovies"
               :key="movie.id"
               tag="li"
               title="Выбрать этот фильм"
-              class="movie mb-3 p-2">
-              <b-img v-if="moviePosterURL(movie)" slot="aside" :src="moviePosterURL(movie)" width="150" :alt="movie.title"/>
-              <h5 v-if="movie.release_date" class="mt-0 mb-1">
+              class="movie mb-3 p-2"
+              @click="onSuggestedMovieClick(movie)"
+            >
+              <b-img
+                v-if="moviePosterURL(movie)"
+                slot="aside"
+                :src="moviePosterURL(movie)"
+                width="150"
+                :alt="movie.title"
+              />
+              <h5
+                v-if="movie.release_date"
+                class="mt-0 mb-1"
+              >
                 {{ movie.original_title }} ({{ movieDateToYear(movie) }})
               </h5>
-              <h5 v-if="!movie.release_date" class="mt-0 mb-1">
+              <h5
+                v-if="!movie.release_date"
+                class="mt-0 mb-1"
+              >
                 {{ movie.original_title }}
               </h5>
               <p class="mb-0">
@@ -89,13 +138,30 @@
           </ul>
         </b-col>
       </b-row>
-      <b-modal hide-footer :title="`Обсуждаем «${movieUnderReview.title}»`" v-model="discussionInProgress" id="discuss-modal">
-        <b-form @submit="onSubmitScore" class="mb-sm-3">
+      <b-modal
+        id="discuss-modal"
+        v-model="discussionInProgress"
+        hide-footer
+        :title="`Обсуждаем «${movieUnderReview.title}»`"
+      >
+        <b-form
+          class="mb-sm-3"
+          @submit="onSubmitScore"
+        >
           <h6>Моя оценка:</h6>
           <b-input-group>
-            <b-form-input autofocus size="lg" v-model="newScore" maxlength="2"></b-form-input>
+            <b-form-input
+              v-model="newScore"
+              autofocus
+              size="lg"
+              maxlength="2"
+            />
             <b-input-group-append>
-              <b-button size="sm" variant="primary" type="submit">
+              <b-button
+                size="sm"
+                variant="primary"
+                type="submit"
+              >
                 Отправить
               </b-button>
             </b-input-group-append>
@@ -103,15 +169,34 @@
         </b-form>
         <table class="discussion-table">
           <tr>
-            <td v-for="user in users" :key="user.id" class="discussion-table__username">
+            <td
+              v-for="user in users"
+              :key="user.id"
+              class="discussion-table__username"
+            >
               {{ user.name }}
             </td>
           </tr>
           <tr>
-            <td v-for="user in users" :key="user.id" class="discussion-table__score">
-              <font-awesome-icon v-if="showQuestionMark(user)" class="question" icon="question" />
-              <font-awesome-icon v-if="showCheck(user)" class="check" icon="check" />
-              <strong v-highlight="movieUnderReview.score" v-if="showUserScore(user)">
+            <td
+              v-for="user in users"
+              :key="user.id"
+              class="discussion-table__score"
+            >
+              <font-awesome-icon
+                v-if="showQuestionMark(user)"
+                class="question"
+                icon="question"
+              />
+              <font-awesome-icon
+                v-if="showCheck(user)"
+                class="check"
+                icon="check"
+              />
+              <strong
+                v-if="showUserScore(user)"
+                v-highlight="movieUnderReview.score"
+              >
                 {{ userScore(movieUnderReview, user) }}
               </strong>
             </td>
@@ -142,6 +227,12 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 library.add(faCheckSquare, faCheck, faTimes, faQuestion, faCircle)
 
 export default {
+  name: 'Suggested',
+  components: {
+    'layout': Layout,
+    'navbar': Navbar,
+    'font-awesome-icon': FontAwesomeIcon
+  },
   data() {
     return {
       search: '',
@@ -151,12 +242,6 @@ export default {
       movieUnderReviewId: null,
       socketConnectionInterval: null
     }
-  },
-  name: 'Suggested',
-  components: {
-    'layout': Layout,
-    'navbar': Navbar,
-    'font-awesome-icon': FontAwesomeIcon
   },
   computed: {
     ...mapGetters([

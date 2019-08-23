@@ -7,7 +7,12 @@
         </b-col>
       </b-row>
       <b-form @submit="login">
-        <b-alert variant="danger" :show="showError">Логин или пароль не верны</b-alert>
+        <b-alert
+          variant="danger"
+          :show="showError"
+        >
+          Логин или пароль не верны
+        </b-alert>
         <b-form-group>
           <b-form-input
             name="email"
@@ -18,13 +23,33 @@
             autocomplete="email"
             autocorrect="off"
             autocapitalize="off"
-            spellcheck="false" />
-          <b-form-input name="password" type="password" required placeholder="Пароль" autocomplete="current-password" />
-          <b-button type="submit" block :disabled="loading" variant="primary">
-            <b-spinner v-if="loading" small></b-spinner>
+            spellcheck="false"
+          />
+          <b-form-input
+            name="password"
+            type="password"
+            required
+            placeholder="Пароль"
+            autocomplete="current-password"
+          />
+          <b-button
+            type="submit"
+            block
+            :disabled="loading"
+            variant="primary"
+          >
+            <b-spinner
+              v-if="loading"
+              small
+            />
             Войти
           </b-button>
-          <router-link class="register" to="/register">регистрация</router-link>
+          <router-link
+            class="register"
+            to="/register"
+          >
+            регистрация
+          </router-link>
         </b-form-group>
       </b-form>
     </b-container>
@@ -33,18 +58,17 @@
 
 <script>
 export default {
+  name: 'Login',
   data() {
     return {
       loading: false,
       showError: false
     }
   },
-  name: 'Login',
   methods: {
     async login(e) {
       const formData = new FormData(e.target)
       const [email, password] = [formData.get('email'), formData.get('password')]
-      let err
 
       e.preventDefault()
 

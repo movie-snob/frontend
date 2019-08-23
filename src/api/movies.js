@@ -27,6 +27,13 @@ export const fetchSuggestedMovies = async () => {
   })
 }
 
+export const fetchReviewedMovies = async () => {
+  return request({
+    url: '/films/reviewed',
+    method: 'get'
+  })
+}
+
 export const markWatched = async (id, date) => {
   return request({
     url: `/films/${id}/watched`,

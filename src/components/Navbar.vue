@@ -1,18 +1,37 @@
 <template>
   <nav>
-    <b-navbar toggleable="sm" type="light" variant="light">
+    <b-navbar
+      toggleable="sm"
+      type="light"
+      variant="light"
+    >
       <b-container>
-        <b-navbar-toggle target="nav-text-collapse"></b-navbar-toggle>
+        <b-navbar-toggle target="nav-text-collapse" />
 
-        <b-navbar-brand to="/movies/suggest">MovieSnob</b-navbar-brand>
+        <b-navbar-brand to="/movies/suggested">
+          MovieSnob
+        </b-navbar-brand>
 
-        <b-collapse id="nav-text-collapse" is-nav>
+        <b-collapse
+          id="nav-text-collapse"
+          is-nav
+        >
           <b-navbar-nav>
+            <b-nav-item to="/movies/suggested">
+              Предложенные фильмы
+            </b-nav-item>
+            <b-nav-item to="/movies/archive">
+              Архив
+            </b-nav-item>
           </b-navbar-nav>
           <b-navbar-nav class="ml-auto">
             <b-nav-item-dropdown right>
-              <template slot="button-content">{{ userName }}</template>
-              <b-dropdown-item @click="logout">Выйти</b-dropdown-item>
+              <template slot="button-content">
+                {{ userName }}
+              </template>
+              <b-dropdown-item @click="logout">
+                Выйти
+              </b-dropdown-item>
             </b-nav-item-dropdown>
           </b-navbar-nav>
         </b-collapse>

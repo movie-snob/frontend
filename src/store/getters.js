@@ -7,6 +7,8 @@ const getters = {
   foundMovies: state => state.app.moviesSearch.results,
   suggestedMovies: state => state.app.suggested,
   suggestedMoviesLoaded: state => state.app.suggestedMoviesLoaded,
+  reviewedMovies: state => state.app.reviewed,
+  reviewedMoviesLoaded: state => state.app.reviewedMoviesLoaded,
   users: state => state.app.users,
   usersLoaded: state => state.app.usersLoaded,
   movieUnderReview: state => state.app.suggested.find(movie => movie.under_review) || {}
