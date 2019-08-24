@@ -14,8 +14,6 @@
       striped
       hover
       small
-      sticky-header
-      borderless
       :fields="fields"
       :items="reviewedMovies"
     >
@@ -73,7 +71,8 @@ export default {
         },
         {
           key: 'suggested_by.name',
-          label: 'Чей выбор'
+          label: 'Чей выбор',
+          sortable: true
         },
         ...this.userNames,
         {
@@ -87,7 +86,8 @@ export default {
       return this.users.map(user => {
         return {
           key: `scores.user_${user.id}.score`,
-          label: user.name
+          label: user.name,
+          sortable: true
         }
       })
     }
