@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-import { getToken } from '../utils/auth'
+import { getToken, removeToken } from '../utils/auth'
 
 const service = axios.create({
   baseURL: "/api",
@@ -20,6 +20,10 @@ service.interceptors.request.use(
 service.interceptors.response.use(
   response => response,
   error => {
+    if (error.response.status === 401) {
+      removeToken()
+      location.reload()
+    }
     return Promise.reject(error)
   }
 )
