@@ -5,204 +5,206 @@
       <template #header>
         <navbar />
       </template>
-      <b-row>
-        <b-col>
-          <h4 class="mt-3 mb-3">
-            Предложенные фильмы
-          </h4>
-        </b-col>
-      </b-row>
-      <b-card-group
-        v-if="suggestedMovies.length > 0"
-        deck
-      >
-        <b-card
-          v-for="movie in suggestedMovies"
-          :key="movie.id"
-          class="mb-3 suggested-movie"
-          title-tag="h5"
-          :title="movie.title"
-          :img-src="moviePosterURL(movie, '200', 'poster')"
-          :img-alt="movie.title"
-          img-left
+      <b-container>
+        <b-row>
+          <b-col>
+            <h4 class="mt-3 mb-3">
+              Предложенные фильмы
+            </h4>
+          </b-col>
+        </b-row>
+        <b-card-group
+          v-if="suggestedMovies.length > 0"
+          deck
         >
-          <b-card-text>
-            <div class="chosen-by">
-              выбран {{ nameToInstrumental(movie.suggested_by.name, movie.suggested_by.gender) }}
-            </div>
-            <b-form-checkbox
-              switch
-              :checked="movie.watched_on !== null"
-              @change.native="onMovieWatchedChange($event, movie)"
-            >
-              Просмотрено
-              <b-form-input
-                type="date"
-                :value="movie.watched_on || today"
-              />
-            </b-form-checkbox>
-          </b-card-text>
-          <ul class="watched-by">
-            <li
-              v-for="user in users"
-              :key="user.id"
-            >
-              <div class="icon">
-                <font-awesome-icon
-                  v-if="user.watched_movies.includes(movie.id)"
-                  class="check"
-                  icon="check-square"
-                />
-                <font-awesome-icon
-                  v-if="!user.watched_movies.includes(movie.id)"
-                  class="times"
-                  icon="times"
-                />
+          <b-card
+            v-for="movie in suggestedMovies"
+            :key="movie.id"
+            class="mb-3 suggested-movie"
+            title-tag="h5"
+            :title="movie.title"
+            :img-src="moviePosterURL(movie, '200', 'poster')"
+            :img-alt="movie.title"
+            img-left
+          >
+            <b-card-text>
+              <div class="chosen-by">
+                выбран {{ nameToInstrumental(movie.suggested_by.name, movie.suggested_by.gender) }}
               </div>
-              <span>{{ user.name }}</span>
-            </li>
-          </ul>
-          <b-button
-            variant="primary"
-            @click="reviewMovie(movie.id)"
-          >
-            Обсудить
-          </b-button>
-          &nbsp;
-          <b-button
-            v-if="movie.suggested_by.id === userId"
-            variant="danger"
-            @click="deleteMovie(movie)"
-          >
-            Удалить
-          </b-button>
-        </b-card>
-      </b-card-group>
-      <b-row>
-        <b-col>
-          <h6 class="mt-3">
-            Предложить фильм
-          </h6>
-        </b-col>
-      </b-row>
-      <b-row class="mb-4">
-        <b-col>
-          <b-form-input
-            v-model="search"
-            autocorrect="off"
-            autocapitalize="off"
-            spellcheck="false"
-            autofocus
-            placeholder="Введите название фильма"
-            @input="handleDebounceSearchInput"
-          />
-        </b-col>
-      </b-row>
-      <b-row>
-        <b-col>
-          <ul
-            v-if="foundMovies.length > 0"
-            class="list-unstyled"
-          >
-            <b-media
-              v-for="movie in foundMovies"
-              :key="movie.id"
-              tag="li"
-              title="Выбрать этот фильм"
-              class="movie mb-3 p-2"
-              @click="onSuggestedMovieClick(movie)"
+              <b-form-checkbox
+                switch
+                :checked="movie.watched_on !== null"
+                @change.native="onMovieWatchedChange($event, movie)"
+              >
+                Просмотрено
+                <b-form-input
+                  type="date"
+                  :value="movie.watched_on || today"
+                />
+              </b-form-checkbox>
+            </b-card-text>
+            <ul class="watched-by">
+              <li
+                v-for="user in users"
+                :key="user.id"
+              >
+                <div class="icon">
+                  <font-awesome-icon
+                    v-if="user.watched_movies.includes(movie.id)"
+                    class="check"
+                    icon="check-square"
+                  />
+                  <font-awesome-icon
+                    v-if="!user.watched_movies.includes(movie.id)"
+                    class="times"
+                    icon="times"
+                  />
+                </div>
+                <span>{{ user.name }}</span>
+              </li>
+            </ul>
+            <b-button
+              variant="primary"
+              @click="reviewMovie(movie.id)"
             >
-              <b-img
-                v-if="moviePosterURL(movie)"
-                slot="aside"
-                :src="moviePosterURL(movie)"
-                width="150"
-                :alt="movie.title"
-              />
-              <h5
-                v-if="movie.release_date"
-                class="mt-0 mb-1"
-              >
-                {{ movie.original_title }} ({{ movieDateToYear(movie) }})
-              </h5>
-              <h5
-                v-if="!movie.release_date"
-                class="mt-0 mb-1"
-              >
-                {{ movie.original_title }}
-              </h5>
-              <p class="mb-0">
-                {{ movie.overview }}
-              </p>
-            </b-media>
-          </ul>
-        </b-col>
-      </b-row>
-      <b-modal
-        id="discuss-modal"
-        v-model="discussionInProgress"
-        hide-footer
-        :title="`Обсуждаем «${movieUnderReview.title}»`"
-      >
-        <b-form
-          class="mb-sm-3"
-          @submit="onSubmitScore"
-        >
-          <h6>Моя оценка:</h6>
-          <b-input-group>
+              Обсудить
+            </b-button>
+            &nbsp;
+            <b-button
+              v-if="movie.suggested_by.id === userId"
+              variant="danger"
+              @click="deleteMovie(movie)"
+            >
+              Удалить
+            </b-button>
+          </b-card>
+        </b-card-group>
+        <b-row>
+          <b-col>
+            <h6 class="mt-3">
+              Предложить фильм
+            </h6>
+          </b-col>
+        </b-row>
+        <b-row class="mb-4">
+          <b-col>
             <b-form-input
-              v-model="newScore"
+              v-model="search"
+              autocorrect="off"
+              autocapitalize="off"
+              spellcheck="false"
               autofocus
-              size="lg"
-              maxlength="2"
+              placeholder="Введите название фильма"
+              @input="handleDebounceSearchInput"
             />
-            <b-input-group-append>
-              <b-button
-                size="sm"
-                variant="primary"
-                type="submit"
-              >
-                Отправить
-              </b-button>
-            </b-input-group-append>
-          </b-input-group>
-        </b-form>
-        <table class="discussion-table">
-          <tr>
-            <td
-              v-for="user in users"
-              :key="user.id"
-              class="discussion-table__username"
+          </b-col>
+        </b-row>
+        <b-row>
+          <b-col>
+            <ul
+              v-if="foundMovies.length > 0"
+              class="list-unstyled"
             >
-              {{ user.name }}
-            </td>
-          </tr>
-          <tr>
-            <td
-              v-for="user in users"
-              :key="user.id"
-              class="discussion-table__score"
-            >
-              <font-awesome-icon
-                v-if="showQuestionMark(user)"
-                class="question"
-                icon="question"
-              />
-              <font-awesome-icon
-                v-if="showCheck(user)"
-                class="check"
-                icon="check"
-              />
-              <strong
-                v-if="showUserScore(user)"
-                v-highlight="movieUnderReview.score"
+              <b-media
+                v-for="movie in foundMovies"
+                :key="movie.id"
+                tag="li"
+                title="Выбрать этот фильм"
+                class="movie mb-3 p-2"
+                @click="onSuggestedMovieClick(movie)"
               >
-                {{ userScore(movieUnderReview, user) }}
-              </strong>
-            </td>
-          </tr>
-        </table>
-      </b-modal>
+                <b-img
+                  v-if="moviePosterURL(movie)"
+                  slot="aside"
+                  :src="moviePosterURL(movie)"
+                  width="150"
+                  :alt="movie.title"
+                />
+                <h5
+                  v-if="movie.release_date"
+                  class="mt-0 mb-1"
+                >
+                  {{ movie.original_title }} ({{ movieDateToYear(movie) }})
+                </h5>
+                <h5
+                  v-if="!movie.release_date"
+                  class="mt-0 mb-1"
+                >
+                  {{ movie.original_title }}
+                </h5>
+                <p class="mb-0">
+                  {{ movie.overview }}
+                </p>
+              </b-media>
+            </ul>
+          </b-col>
+        </b-row>
+        <b-modal
+          id="discuss-modal"
+          v-model="discussionInProgress"
+          hide-footer
+          :title="`Обсуждаем «${movieUnderReview.title}»`"
+        >
+          <b-form
+            class="mb-sm-3"
+            @submit="onSubmitScore"
+          >
+            <h6>Моя оценка:</h6>
+            <b-input-group>
+              <b-form-input
+                v-model="newScore"
+                autofocus
+                size="lg"
+                maxlength="2"
+              />
+              <b-input-group-append>
+                <b-button
+                  size="sm"
+                  variant="primary"
+                  type="submit"
+                >
+                  Отправить
+                </b-button>
+              </b-input-group-append>
+            </b-input-group>
+          </b-form>
+          <table class="discussion-table">
+            <tr>
+              <td
+                v-for="user in users"
+                :key="user.id"
+                class="discussion-table__username"
+              >
+                {{ user.name }}
+              </td>
+            </tr>
+            <tr>
+              <td
+                v-for="user in users"
+                :key="user.id"
+                class="discussion-table__score"
+              >
+                <font-awesome-icon
+                  v-if="showQuestionMark(user)"
+                  class="question"
+                  icon="question"
+                />
+                <font-awesome-icon
+                  v-if="showCheck(user)"
+                  class="check"
+                  icon="check"
+                />
+                <strong
+                  v-if="showUserScore(user)"
+                  v-highlight="movieUnderReview.score"
+                >
+                  {{ userScore(movieUnderReview, user) }}
+                </strong>
+              </td>
+            </tr>
+          </table>
+        </b-modal>
+      </b-container>
     </layout>
   </div>
 </template>

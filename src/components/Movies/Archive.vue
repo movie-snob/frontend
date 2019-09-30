@@ -3,28 +3,32 @@
     <template #header>
       <navbar />
     </template>
-    <b-row>
-      <b-col>
-        <h4 class="mt-3 mb-3">
-          Архив
-        </h4>
-      </b-col>
-    </b-row>
-    <b-table
-      striped
-      hover
-      small
-      :fields="fields"
-      :items="reviewedMovies"
-    >
-      <template
-        v-for="user in users"
-        slot="[user_${user.id}]"
-        slot-scope="data"
+    <b-container>
+      <b-row>
+        <b-col>
+          <h4 class="mt-3 mb-3">
+            Архив
+          </h4>
+        </b-col>
+      </b-row>
+    </b-container>
+    <b-container fluid>
+      <b-table
+        striped
+        hover
+        small
+        :fields="fields"
+        :items="reviewedMovies"
       >
-        {{ data.item.scores.name }}
-      </template>
-    </b-table>
+        <template
+          v-for="user in users"
+          slot="[user_${user.id}]"
+          slot-scope="data"
+        >
+          {{ data.item.scores.name }}
+        </template>
+      </b-table>
+    </b-container>
   </layout>
 </template>
 
@@ -63,6 +67,11 @@ export default {
         {
           key: 'title',
           label: 'Название'
+        },
+        {
+          key: 'director',
+          label: 'Режиссёр',
+          sortable: true
         },
         {
           key: 'year',

@@ -4,9 +4,7 @@
       <slot name="header" />
     </header>
     <main>
-      <b-container>
-        <slot />
-      </b-container>
+      <slot />
     </main>
   </div>
 </template>
