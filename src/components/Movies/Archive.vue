@@ -21,6 +21,19 @@
         :items="reviewedMovies"
       >
         <template
+          v-slot:cell(title)="data"
+        >
+          {{ data.item.title }}
+          <a
+            :href="'https://www.imdb.com/title/' + data.item.imdb_id"
+            class="imdb-link"
+            target="blank"
+            title="Перейти на IMDB"
+          >
+            <font-awesome-icon icon="external-link-alt" />
+          </a>
+        </template>
+        <template
           v-for="user in users"
           slot="[user_${user.id}]"
           slot-scope="data"
@@ -41,11 +54,18 @@ import moment from 'moment'
 import Layout from '../Layout'
 import Navbar from '../Navbar'
 
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+
+library.add(faExternalLinkAlt)
+
 export default {
   name: 'Archive',
   components: {
     'layout': Layout,
-    'navbar': Navbar
+    'navbar': Navbar,
+    'font-awesome-icon': FontAwesomeIcon
   },
   computed: {
     ...mapGetters([
@@ -120,3 +140,10 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+a.imdb-link {
+  vertical-align: super;
+  font-size: 0.8em;
+}
+</style>

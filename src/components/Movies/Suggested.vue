@@ -21,16 +21,25 @@
             v-for="movie in suggestedMovies"
             :key="movie.id"
             class="mb-3 suggested-movie"
-            title-tag="h5"
-            :title="movie.title"
             :img-src="moviePosterURL(movie, '200', 'poster')"
             :img-alt="movie.title"
             img-left
           >
+            <b-card-title>
+              {{ movie.title }}
+              <a
+                :href="'https://www.imdb.com/title/' + movie.imdb_id"
+                class="imdb-link"
+                target="blank"
+                title="Перейти на IMDB"
+              >
+                <font-awesome-icon icon="external-link-alt" />
+              </a>
+            </b-card-title>
+            <b-card-sub-title>
+              {{ movie.director }}
+            </b-card-sub-title>
             <b-card-text>
-              <div class="chosen-by">
-                выбран {{ nameToInstrumental(movie.suggested_by.name, movie.suggested_by.gender) }}
-              </div>
               <b-form-checkbox
                 switch
                 :checked="movie.watched_on !== null"
@@ -60,7 +69,8 @@
                     icon="times"
                   />
                 </div>
-                <span>{{ user.name }}</span>
+                <strong v-if="user.id === movie.suggested_by.id">{{ user.name }}</strong>
+                <span v-else>{{ user.name }}</span>
               </li>
             </ul>
             <b-button
@@ -223,10 +233,10 @@ import Layout from '../Layout'
 import Navbar from '../Navbar'
 
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faCheckSquare, faCheck, faTimes, faQuestion, faCircle } from '@fortawesome/free-solid-svg-icons'
+import { faCheckSquare, faCheck, faTimes, faQuestion, faCircle, faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
-library.add(faCheckSquare, faCheck, faTimes, faQuestion, faCircle)
+library.add(faCheckSquare, faCheck, faTimes, faQuestion, faCircle, faExternalLinkAlt)
 
 export default {
   name: 'Suggested',
@@ -469,10 +479,14 @@ export default {
 .chosen-by {
   font-size: 0.9em;
   font-style: italic;
-  margin-bottom: 12px;
+  margin: 0 0 12px;
 }
-.card-title {
-  margin-bottom: 0;
+.card-subtitle {
+  margin-bottom: 10px;
+}
+a.imdb-link {
+  vertical-align: super;
+  font-size: 0.6em;
 }
 ul.watched-by {
   list-style-type: none;
