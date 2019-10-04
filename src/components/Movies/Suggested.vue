@@ -30,7 +30,7 @@
               <a
                 :href="'https://www.imdb.com/title/' + movie.imdb_id"
                 class="imdb-link"
-                target="blank"
+                target="_blank"
                 title="Перейти на IMDB"
               >
                 <font-awesome-icon icon="external-link-alt" />
