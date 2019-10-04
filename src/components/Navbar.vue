@@ -18,7 +18,7 @@
         >
           <b-navbar-nav>
             <b-nav-item to="/movies/suggested">
-              Предложенные фильмы
+              Просмотр
             </b-nav-item>
             <b-nav-item to="/movies/archive">
               Архив
