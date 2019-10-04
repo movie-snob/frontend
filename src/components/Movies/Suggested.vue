@@ -77,7 +77,7 @@
               variant="primary"
               @click="reviewMovie(movie.id)"
             >
-              Обсудить
+              Оценить
             </b-button>
             &nbsp;
             <b-button
@@ -153,7 +153,7 @@
           id="discuss-modal"
           v-model="discussionInProgress"
           hide-footer
-          :title="`Обсуждаем «${movieUnderReview.title}»`"
+          :title="`Оцениваем «${movieUnderReview.title}»`"
         >
           <b-form
             class="mb-sm-3"
