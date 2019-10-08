@@ -71,7 +71,7 @@ export default {
       return [
         {
           key: 'watched_on',
-          label: 'Дата',
+          label: 'Дата выбора',
           sortable: true,
           formatter: value => moment(value * 1000).format('DD.MM.YYYY')
         },
