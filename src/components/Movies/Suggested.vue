@@ -37,40 +37,23 @@
             <b-card-sub-title>
               {{ movie.director }}
             </b-card-sub-title>
-            <b-card-text>
+            <b-form-checkbox-group
+              class="watched-by"
+              switches
+              stacked
+            >
               <b-form-checkbox
-                switch
-                :checked="movie.watched_on !== null"
-                @change.native="onMovieWatchedChange($event, movie)"
-              >
-                Просмотрено
-                <b-form-input
-                  type="date"
-                  :value="movie.watched_on || today"
-                />
-              </b-form-checkbox>
-            </b-card-text>
-            <ul class="watched-by">
-              <li
                 v-for="user in users"
                 :key="user.id"
+                v-model="watchedFilms[movie.id]"
+                name="watched_by"
+                :value="user.id"
+                @change.native="onMovieWatchedChange($event, movie.id)"
               >
-                <div class="icon">
-                  <font-awesome-icon
-                    v-if="user.watched_movies.includes(movie.id)"
-                    class="check"
-                    icon="check-square"
-                  />
-                  <font-awesome-icon
-                    v-if="!user.watched_movies.includes(movie.id)"
-                    class="times"
-                    icon="times"
-                  />
-                </div>
                 <strong v-if="user.id === movie.suggested_by.id">{{ user.name }}</strong>
                 <span v-else>{{ user.name }}</span>
-              </li>
-            </ul>
+              </b-form-checkbox>
+            </b-form-checkbox-group>
             <b-button
               variant="primary"
               @click="reviewMovie(movie.id)"
@@ -250,7 +233,8 @@ export default {
       discussionInProgress: false,
       newScore: null,
       movieUnderReviewId: null,
-      socketConnectionInterval: null
+      socketConnectionInterval: null,
+      watchedFilms: {}
     }
   },
   computed: {
@@ -308,6 +292,8 @@ export default {
         this.$store.dispatch('FetchUsers')
       ])
 
+      this.populateWatchedFilms()
+
       progress.done()
     }
   },
@@ -364,18 +350,19 @@ export default {
         solid: true
       })
     },
-    onMovieWatchedChange(event, movie) {
+    onMovieWatchedChange(event, movieId) {
       const watched = event.target.checked
-      const date = event.target.parentNode.querySelector('input[type=date]').value
 
       if (watched) {
         this.$store.dispatch('MarkWatched', {
-          id: movie.id,
-          date
+          id: movieId,
+          userId: event.target.value,
+          date: this.today
         })
       } else {
         this.$store.dispatch('MarkUnwatched', {
-          id: movie.id
+          id: movieId,
+          userId: event.target.value
         })
       }
     },
@@ -458,6 +445,12 @@ export default {
     },
     showCheck(user) {
       return (user.id !== this.userId && this.userScore(this.movieUnderReview, user)) && !this.allUsersVoted
+    },
+    populateWatchedFilms() {
+      this.suggestedMovies.map(movie => {
+        this.watchedFilms[movie.id] =
+          this.users.filter(user => user.watched_movies.includes(movie.id)).map(movie => movie.id)
+      })
     }
   }
 }
@@ -482,21 +475,9 @@ export default {
 .card-subtitle {
   margin-bottom: 10px;
 }
-ul.watched-by {
+.watched-by {
   list-style-type: none;
-  padding-left: 0;
-  li {
-    display: flex;
-    padding-left: 5px;
-    svg {
-      margin-right: 3px;
-    }
-  }
-  .icon {
-    margin-right: 3px;
-    text-align: center;
-    width: 16px;
-  }
+  margin: 20px 0 50px;
 }
 .check {
   color: #28a745;

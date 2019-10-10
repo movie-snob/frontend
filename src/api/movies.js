@@ -34,9 +34,9 @@ export const fetchReviewedMovies = async () => {
   })
 }
 
-export const markWatched = async (id, date) => {
+export const markWatched = async (id, userId, date) => {
   return request({
-    url: `/films/${id}/watched`,
+    url: `/films/${id}/watched?user_id=${userId}`,
     method: 'post',
     data: {
       date
@@ -44,9 +44,9 @@ export const markWatched = async (id, date) => {
   })
 }
 
-export const markUnwatched = async (id) => {
+export const markUnwatched = async (id, userId) => {
   return request({
-    url: `/films/${id}/unwatched`,
+    url: `/films/${id}/unwatched?user_id=${userId}`,
     method: 'post'
   })
 }

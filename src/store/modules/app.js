@@ -117,15 +117,15 @@ const app = {
 
       commit('SET_REVIEWED', response.data)
     },
-    MarkWatched({ commit, rootState }, { id, date }) {
-      markWatched(id, date)
+    MarkWatched({ commit }, { id, userId, date }) {
+      markWatched(id, userId, date)
 
-      commit('SET_WATCHED', { movieId: id, userId: rootState.auth.user.id, date })
+      commit('SET_WATCHED', { movieId: id, userId, date })
     },
-    MarkUnwatched({ commit, rootState }, { id }) {
-      markUnwatched(id)
+    MarkUnwatched({ commit }, { id, userId }) {
+      markUnwatched(id, userId)
 
-      commit('SET_UNWATCHED', { movieId: id, userId: rootState.auth.user.id })
+      commit('SET_UNWATCHED', { movieId: id, userId })
     },
     async FetchUsers({ commit }) {
       const response = await fetchUsers()
