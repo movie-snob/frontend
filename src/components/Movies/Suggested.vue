@@ -50,8 +50,14 @@
                 :value="user.id"
                 @change.native="onMovieWatchedChange($event, movie.id)"
               >
-                <strong v-if="user.id === movie.suggested_by.id">{{ user.name }}</strong>
-                <span v-else>{{ user.name }}</span>
+                <strong
+                  v-if="user.id === movie.suggested_by.id"
+                  class="user-name"
+                >{{ user.name }}</strong>
+                <span
+                  v-else
+                  class="user-name"
+                >{{ user.name }}</span>
               </b-form-checkbox>
             </b-form-checkbox-group>
             <b-button
@@ -478,6 +484,13 @@ export default {
 .watched-by {
   list-style-type: none;
   margin: 20px 0 50px;
+  .user-name {
+    cursor: pointer;
+    -webkit-user-select: none; /* webkit (safari, chrome) browsers */
+    -moz-user-select: none; /* mozilla browsers */
+    -khtml-user-select: none; /* webkit (konqueror) browsers */
+    -ms-user-select: none; /* IE10+ */
+  }
 }
 .check {
   color: #28a745;
