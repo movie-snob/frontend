@@ -13,7 +13,8 @@ const app = {
     reviewedMoviesLoaded: false,
     users: [],
     usersLoaded: false,
-    movieUnderReview: {}
+    movieUnderReview: {},
+    watchedMovies: {}
   },
   mutations: {
     'SET_SEARCH_RESULTS': (state, movies) => {
@@ -86,6 +87,16 @@ const app = {
     },
     'REMOVE_SUGGESTED_MOVIE': (state, id) => {
       state.suggested = state.suggested.filter(movie => movie.id !== id)
+    },
+    'SET_WATCHED_MOVIES': (state) => {
+      let watchedMovies = {}
+
+      state.suggested.map(movie => {
+        watchedMovies[movie.id] =
+          state.users.filter(user => user.watched_movies.includes(movie.id)).map(movie => movie.id)
+      })
+
+      state.watchedMovies = watchedMovies
     }
   },
   actions: {
@@ -145,6 +156,9 @@ const app = {
     },
     SetScores({ commit }, { id, scores }) {
       commit('SET_MOVIE_SCORES', { id, scores })
+    },
+    PopulateWatchedMovies({ commit }) {
+      commit('SET_WATCHED_MOVIES')
     }
   }
 }

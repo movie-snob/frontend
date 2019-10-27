@@ -45,7 +45,7 @@
               <b-form-checkbox
                 v-for="user in users"
                 :key="user.id"
-                v-model="watchedFilms[movie.id]"
+                v-model="watchedMovies[movie.id]"
                 name="watched_by"
                 :value="user.id"
                 @change.native="onMovieWatchedChange($event, movie.id)"
@@ -239,8 +239,7 @@ export default {
       discussionInProgress: false,
       newScore: null,
       movieUnderReviewId: null,
-      socketConnectionInterval: null,
-      watchedFilms: {}
+      socketConnectionInterval: null
     }
   },
   computed: {
@@ -251,7 +250,8 @@ export default {
       'suggestedMovies',
       'suggestedMoviesLoaded',
       'users',
-      'usersLoaded'
+      'usersLoaded',
+      'watchedMovies'
     ]),
     loaded() {
       return this.suggestedMoviesLoaded && this.usersLoaded
@@ -298,9 +298,11 @@ export default {
         this.$store.dispatch('FetchUsers')
       ])
 
-      this.populateWatchedFilms()
+      this.$store.dispatch('PopulateWatchedMovies')
 
       progress.done()
+    } else {
+      this.$store.dispatch('PopulateWatchedMovies')
     }
   },
   beforeDestroy() {
@@ -451,12 +453,6 @@ export default {
     },
     showCheck(user) {
       return (user.id !== this.userId && this.userScore(this.movieUnderReview, user)) && !this.allUsersVoted
-    },
-    populateWatchedFilms() {
-      this.suggestedMovies.map(movie => {
-        this.watchedFilms[movie.id] =
-          this.users.filter(user => user.watched_movies.includes(movie.id)).map(movie => movie.id)
-      })
     }
   }
 }

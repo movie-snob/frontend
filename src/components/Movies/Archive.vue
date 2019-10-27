@@ -62,7 +62,8 @@ export default {
     ...mapGetters([
       'reviewedMovies',
       'reviewedMoviesLoaded',
-      'users'
+      'users',
+      'usersLoaded'
     ]),
     loaded() {
       return this.reviewedMoviesLoaded && this.usersLoaded
