@@ -456,11 +456,21 @@ export default {
       return (user.id !== this.userId && this.userScore(this.movieUnderReview, user)) && !this.allUsersVoted
     },
     movieRuntime(minutes) {
+      const hours = Math.trunc(minutes / 60)
+      const minutesInTheHour = minutes % 60
+
       if (minutes === undefined || minutes === null) {
         return ""
       }
 
-      return `, ${Math.trunc(minutes / 60)}ч ${minutes % 60}м`
+      if (hours === 0) {
+        return `, ${minutesInTheHour}м`
+      }
+      if (minutesInTheHour === 0) {
+        return `, ${hours}ч`
+      }
+
+      return `, ${hours}ч ${minutesInTheHour}м`
     }
   }
 }
