@@ -35,8 +35,9 @@
               </a>
             </b-card-title>
             <b-card-sub-title>
-              {{ movie.director }}
+              {{ movie.director }}{{ movieRuntime(movie.runtime) }}
             </b-card-sub-title>
+
             <b-form-checkbox-group
               class="watched-by"
               switches
@@ -453,6 +454,13 @@ export default {
     },
     showCheck(user) {
       return (user.id !== this.userId && this.userScore(this.movieUnderReview, user)) && !this.allUsersVoted
+    },
+    movieRuntime(minutes) {
+      if (minutes === undefined || minutes === null) {
+        return ""
+      }
+
+      return `, ${Math.trunc(minutes / 60)}ч ${minutes % 60}м`
     }
   }
 }
