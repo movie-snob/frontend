@@ -122,7 +122,7 @@
                   v-if="movie.release_date"
                   class="mt-0 mb-1"
                 >
-                  {{ movie.original_title }} ({{ movieDateToYear(movie) }})
+                  {{ movie.original_language === 'ru' ? movie.original_title : movie.title }} ({{ movieDateToYear(movie) }})
                 </h5>
                 <h5
                   v-if="!movie.release_date"
@@ -341,8 +341,10 @@ export default {
 
       progress.start()
 
+      const movieTitle = (movie.original_language === 'ru' ? movie.original_title : movie.title)
+
       await this.$store.dispatch('SuggestMovie', {
-        title: movie.original_title,
+        title: movieTitle,
         year: this.movieDateToYear(movie),
         poster: movie.poster_path,
         movieDBId: movie.id
