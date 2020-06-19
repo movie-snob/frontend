@@ -37,7 +37,7 @@
     border-color: #000 !important;
   }
   .custom-switch .custom-control-label::before {
-    background: #262626 !important;
+    background: #262626;
     border-color: #616161;
   }
   .card-title a {
