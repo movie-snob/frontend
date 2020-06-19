@@ -103,7 +103,18 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
+@media (prefers-color-scheme: dark) {
+  html, body, nav {
+    background: #1f1f1f !important;
+    color: #bfbfbf;
+  }
+  .form-control, .form-control:focus {
+    background: transparent;
+    border-color: #3b454e;
+    color: #babfc5;
+  }
+}
 h1 {
   margin-top: 50px;
   text-align: center;
