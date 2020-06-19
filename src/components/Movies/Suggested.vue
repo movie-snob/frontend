@@ -25,56 +25,62 @@
             :img-alt="movie.title"
             img-left
           >
-            <b-card-title>
-              <a
-                :href="'https://www.imdb.com/title/' + movie.imdb_id"
-                target="_blank"
-                title="Перейти на IMDB"
-              >
-                {{ movie.title }}
-              </a>
-            </b-card-title>
-            <b-card-sub-title>
-              {{ movie.director }}{{ movieRuntime(movie.runtime) }}
-            </b-card-sub-title>
+            <div class="card-inner-container">
+              <div>
+                <b-card-title>
+                  <a
+                    :href="'https://www.imdb.com/title/' + movie.imdb_id"
+                    target="_blank"
+                    title="Перейти на IMDB"
+                  >
+                    {{ movie.title }}
+                  </a>
+                </b-card-title>
+                <b-card-sub-title>
+                  {{ movie.director }}{{ movieRuntime(movie.runtime) }}
+                </b-card-sub-title>
 
-            <b-form-checkbox-group
-              class="watched-by"
-              switches
-              stacked
-            >
-              <b-form-checkbox
-                v-for="user in users"
-                :key="user.id"
-                v-model="watchedMovies[movie.id]"
-                name="watched_by"
-                :value="user.id"
-                @change.native="onMovieWatchedChange($event, movie.id)"
-              >
-                <strong
-                  v-if="user.id === movie.suggested_by.id"
-                  class="user-name"
-                >{{ user.name }}</strong>
-                <span
-                  v-else
-                  class="user-name"
-                >{{ user.name }}</span>
-              </b-form-checkbox>
-            </b-form-checkbox-group>
-            <b-button
-              variant="primary"
-              @click="reviewMovie(movie.id)"
-            >
-              Оценить
-            </b-button>
-            &nbsp;
-            <b-button
-              v-if="movie.suggested_by.id === userId"
-              variant="danger"
-              @click="deleteMovie(movie)"
-            >
-              Удалить
-            </b-button>
+                <b-form-checkbox-group
+                  class="watched-by"
+                  switches
+                  stacked
+                >
+                  <b-form-checkbox
+                    v-for="user in users"
+                    :key="user.id"
+                    v-model="watchedMovies[movie.id]"
+                    name="watched_by"
+                    :value="user.id"
+                    @change.native="onMovieWatchedChange($event, movie.id)"
+                  >
+                    <strong
+                      v-if="user.id === movie.suggested_by.id"
+                      class="user-name"
+                    >{{ user.name }}</strong>
+                    <span
+                      v-else
+                      class="user-name"
+                    >{{ user.name }}</span>
+                  </b-form-checkbox>
+                </b-form-checkbox-group>
+              </div>
+              <div>
+                <b-button
+                  variant="primary"
+                  @click="reviewMovie(movie.id)"
+                >
+                  Оценить
+                </b-button>
+                &nbsp;
+                <b-button
+                  v-if="movie.suggested_by.id === userId"
+                  variant="danger"
+                  @click="deleteMovie(movie)"
+                >
+                  Удалить
+                </b-button>
+              </div>
+            </div>
           </b-card>
         </b-card-group>
         <b-row>
@@ -479,9 +485,16 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@media (prefers-color-scheme: light) {
+  .movie {
+    &:hover {
+      background-color: #fafafa;
+    }
+  }
+}
 .movie {
+  transition: background-color 1s ease-in-out;
   &:hover {
-    background: #f5f5f5;
     cursor: pointer;
   }
 }
@@ -551,5 +564,11 @@ export default {
   padding: 0 5px;
   animation-name: highlight;
   animation-duration: 1s;
+}
+.card-inner-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 </style>
