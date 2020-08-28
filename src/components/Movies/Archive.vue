@@ -33,7 +33,7 @@
         </template>
         <template
           v-for="user in users"
-          slot="[user_${user.id}]"
+          :slot="`[user_${user.id}]`"
           slot-scope="data"
         >
           {{ data.item.scores.name }}
