@@ -514,10 +514,12 @@ export default {
   margin: 20px 0 50px;
   .user-name {
     cursor: pointer;
+    text-decoration: underline;
     -webkit-user-select: none; /* webkit (safari, chrome) browsers */
     -moz-user-select: none; /* mozilla browsers */
     -khtml-user-select: none; /* webkit (konqueror) browsers */
     -ms-user-select: none; /* IE10+ */
+    user-select: none;
   }
 }
 .check {
