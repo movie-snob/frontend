@@ -1,4 +1,3 @@
-
 <template>
   <div v-if="loaded">
     <layout>
@@ -33,7 +32,7 @@
                     target="_blank"
                     title="Перейти на IMDB"
                   >
-                    {{ movie.title }}
+                    {{ movie.title }} ({{ movie.year }})
                   </a>
                 </b-card-title>
                 <b-card-sub-title>
