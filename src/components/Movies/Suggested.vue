@@ -54,7 +54,7 @@
                   >
                     <strong
                       v-if="user.id === movie.suggested_by.id"
-                      class="user-name"
+                      class="user-name user-name--suggested-by"
                     >{{ user.name }}</strong>
                     <span
                       v-else
@@ -513,8 +513,10 @@ export default {
   list-style-type: none;
   margin: 20px 0 50px;
   .user-name {
+    &--suggested-by {
+      text-decoration: underline;
+    }
     cursor: pointer;
-    text-decoration: underline;
     -webkit-user-select: none; /* webkit (safari, chrome) browsers */
     -moz-user-select: none; /* mozilla browsers */
     -khtml-user-select: none; /* webkit (konqueror) browsers */
