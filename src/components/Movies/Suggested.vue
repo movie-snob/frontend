@@ -32,11 +32,11 @@
                     target="_blank"
                     title="Перейти на IMDB"
                   >
-                    {{ movie.title }} ({{ movie.year }})
+                    {{ movie.title }}
                   </a>
                 </b-card-title>
                 <b-card-sub-title>
-                  {{ movie.director }}{{ movieRuntime(movie.runtime) }}
+                  {{ movie.director }}{{ movieRuntime(movie.runtime) }}, {{ movie.year }} г.
                 </b-card-sub-title>
 
                 <b-form-checkbox-group
