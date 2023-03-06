@@ -281,11 +281,11 @@ export default {
   created() {
     this.connectToWebSocket()
 
-    this.socketConnectionInterval = setInterval(() => {
-      if (this.socket.readyState !== WebSocket.OPEN) {
-        this.connectToWebSocket()
-      }
-    }, 300);
+    // this.socketConnectionInterval = setInterval(() => {
+    //   if (this.socket.readyState !== WebSocket.OPEN) {
+    //     this.connectToWebSocket()
+    //   }
+    // }, 300);
 
     this.handleDebounceSearchInput = debounce(async (query) => {
       progress.start()
