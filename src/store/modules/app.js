@@ -50,7 +50,7 @@ const app = {
 
       state.users = state.users.map((user) => {
         if (user.id === userId) {
-          user.watched_movies = [...user.watched_movies, movieId];
+          user.watchedMovies = [...user.watchedMovies, movieId];
         }
 
         return user;
@@ -67,7 +67,7 @@ const app = {
 
       state.users = state.users.map((user) => {
         if (user.id === userId) {
-          user.watched_movies = user.watched_movies.filter(
+          user.watchedMovies = user.watchedMovies.filter(
             (id) => movieId !== id
           );
         }
@@ -106,7 +106,9 @@ const app = {
 
       state.suggested.map((movie) => {
         watchedMovies[movie.id] = state.users
-          .filter((user) => user.watched_movies.includes(movie.id))
+          .filter((user) => {
+            return user.watchedMovies.includes(movie.id);
+          })
           .map((movie) => movie.id);
       });
 

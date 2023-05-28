@@ -53,7 +53,7 @@
                     @change.native="onMovieWatchedChange($event, movie.id)"
                   >
                     <strong
-                      v-if="user.id === movie.suggested_by.id"
+                      v-if="user.id === movie.suggestedBy.id"
                       class="user-name user-name--suggested-by"
                     >{{ user.name }}</strong>
                     <span
@@ -72,7 +72,7 @@
                 </b-button>
                 &nbsp;
                 <b-button
-                  v-if="movie.suggested_by.id === userId"
+                  v-if="movie.suggestedBy.id === userId"
                   variant="danger"
                   @click="deleteMovie(movie)"
                 >

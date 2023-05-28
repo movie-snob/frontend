@@ -91,7 +91,7 @@ export default {
           sortable: true
         },
         {
-          key: 'suggested_by.name',
+          key: 'suggestedBy.name',
           label: 'Чей выбор',
           sortable: true
         },
